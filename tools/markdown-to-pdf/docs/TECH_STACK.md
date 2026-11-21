@@ -1,6 +1,6 @@
 # Tech stack: Markdown to PDF
 
-Libraries this tool adds on top of the shared stack in `docs/design/TECH_STACK.md`. *Verified* means it ran in spike 0001.
+Libraries this tool adds on top of the shared stack in [docs/design/TECH_STACK.md](../../../docs/design/TECH_STACK.md). *Verified* means it ran in spike 0001.
 
 | Area | Choice |
 |---|---|

@@ -1,6 +1,6 @@
 # High-level design: Goblin Toolbox
 
-This document covers the toolbox platform only: the parts every tool shares. It implements the shared requirements in the root `README.md` and `docs/design/NFR.md`. Each tool's own requirements live in `tools/<slug>/README.md`; its technical documents live in `tools/<slug>/docs/` and must fit the rules here.
+This document covers the toolbox platform only: the parts every tool shares. It implements the shared requirements in the root [README.md](../../README.md) and [docs/design/NFR.md](./NFR.md). Each tool's own requirements live in `tools/<slug>/README.md`; its technical documents live in `tools/<slug>/docs/` and must fit the rules here.
 
 ## Domain model
 
@@ -115,9 +115,9 @@ flowchart LR
 
 - **Web App** is built to `frontend/dist`, served by the CDN, and runs in the browser.
 - **Edge** is Vercel's CDN and WAF; the SPA fallback sends any non-file path outside `/api/` to `index.html`.
-- **API** runs as one Vercel Function holding every tool's router. Tools do not get separate functions for now; the limit and the split path are in `docs/design/PROJECT_STRUCTURE.md`, section "Scaling limit of one function".
+- **API** runs as one Vercel Function holding every tool's router. Tools do not get separate functions for now; the limit and the split path are in [docs/design/PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md), section "Scaling limit of one function".
 - **Function settings** (memory, `maxDuration`, `includeFiles`) are set to the largest need declared by any tool.
-- **Region:** one function region for the whole toolbox, chosen in Phase 2 by measuring latency.
+- **Region:** one function region for the whole toolbox. Phase 2 compares `iad1` and `sin1` health latency and selects `sin1` for the Vietnam audience.
 - **Cron** calls `/api/cron/*` for tools that declare scheduled jobs.
 - **Tool dependencies** (storage, external services, bundled files) are declared in each tool's design and added when the tool is built.
 
@@ -149,12 +149,12 @@ Shared middleware (in order): request id, JSON body parsing, structured request 
 
 Verified with a fake tool in Phase 2.
 
-1. Add the tool's requirements to `tools/<slug>/README.md`.
-2. Write `tools/<slug>/docs/` before building, including decisions, OpenAPI (if it has an API), and any extra dependencies or function settings it needs. Record tool-specific requirements in `tools/<slug>/README.md`; define checks and acceptance criteria in the phase plan.
-3. Create the package `tools/<slug>/` (`@goblin/tool-<slug>`) with its UI, API and i18n strings (`docs/design/PROJECT_STRUCTURE.md`, section "Packages (pnpm workspaces)").
-4. Connect the tool UI to its route and, if it has an API, mount its router in `backend/src/tools.ts`.
-5. Declare the tool's dependencies in its own `package.json` only; never import another tool. Add tests and update the README.
-6. If the tool raises the function's memory, duration or bundle size, record the new values in `docs/design/PROJECT_STRUCTURE.md`.
+1. Add the tool's requirements to `tools/<slug>/README.md`; define phase checks and acceptance criteria in the phase plan.
+2. Write `tools/<slug>/docs/` before building, including decisions, OpenAPI when the tool has an API, and any extra dependencies or function settings it needs.
+3. Create `tools/<slug>/` (`@goblin/tool-<slug>`) with its UI, API and i18n strings ([docs/design/PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md), section "Packages (pnpm workspaces)"). Declare its own runtime dependencies in its `package.json`, and add it as a workspace dependency of `frontend` or `backend` where needed. Never import another tool.
+4. Export the UI from `@goblin/tool-<slug>/ui` and register it in `frontend/src/app/registry.ts` with its lazy UI, vault, translated name, description and search keywords. Export an Express router from `@goblin/tool-<slug>/api` and mount it in `backend/src/tools.ts` under `/api/tools/<slug>` when the tool has an API.
+5. Keep tool UI text in the tool's locale files and shared shell text in `frontend/src/i18n/locales/<locale>/common.json`. Add tests and update the tool README and OpenAPI document when its API changes.
+6. Declare required environment variables, bundled files, memory, duration and cron needs in the tool docs. If the tool raises the function's memory, duration or bundle size, record the new values in [docs/design/PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md).
 7. If it needs scheduled work, add a cron under `/api/cron/<slug>-<job>`.
 
 ## Tool designs

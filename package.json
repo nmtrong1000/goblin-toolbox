@@ -1,0 +1,36 @@
+{
+  "name": "goblin-toolbox",
+  "private": true,
+  "packageManager": "pnpm@12.21.0",
+  "engines": {
+    "node": "26.x"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n api,web -c blue,green \"pnpm --filter @goblin/api dev\" \"pnpm --filter @goblin/web dev\"",
+    "build": "pnpm --filter @goblin/api build && pnpm --filter @goblin/web build",
+    "preview": "concurrently -k -n api,web -c blue,green \"pnpm --filter @goblin/api dev\" \"pnpm --filter @goblin/web preview\"",
+    "lint": "oxlint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc -b",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@goblin/api": "workspace:*"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^22.15.30",
+    "concurrently": "^9.1.2",
+    "oxlint": "^1.15.0",
+    "prettier": "^3.5.3",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "prettier": {
+    "singleQuote": true,
+    "semi": true,
+    "trailingComma": "all",
+    "printWidth": 100
+  }
+}

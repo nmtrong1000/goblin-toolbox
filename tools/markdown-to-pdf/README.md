@@ -25,6 +25,6 @@ Design documents are in this package's `docs/` directory (Phase 1):
 
 | Document | Content |
 |---|---|
-| [openapi.yaml](docs/openapi.yaml) | API contract |
+| `openapi.yaml` | API contract |
 | [TECH_STACK.md](docs/TECH_STACK.md) | libraries the tool adds |
-| [decisions/](docs/decisions/) | tool decisions |
+| `decisions/` | tool decisions |
