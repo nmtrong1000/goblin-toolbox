@@ -2,7 +2,7 @@
 
 **Goal:** Add the tool to the blank source and complete its UI and API through slices 3.0–3.6. Each slice works end to end (UI + API + tests) and is reviewed before the next one starts.
 
-Each slice defines the status codes and headers for the cases it implements, then updates `docs/design/api/markdown-to-pdf.openapi.yaml`.
+Each slice defines the status codes and headers for the cases it implements, then updates `tools/markdown-to-pdf/docs/openapi.yaml`.
 
 ## Slice overview
 
@@ -20,9 +20,9 @@ Each slice defines the status codes and headers for the cases it implements, the
 
 | ID | Task | Description | Depends on | Status |
 |---|---|---|---|---|
-| M0.1 | Tool NFRs | Set the tool's own non-functional requirements (API and preview performance, input limits, security, privacy) from the spike numbers, and record them in `docs/INIT_PLAN.md` section 6.5. | — | [ ] |
-| M0.2 | Register the tool | The `Document Tools` vault, plus the Markdown to PDF manifest and an empty router, per the add-tool checklist. | — | [ ] |
-| M0.3 | Markdown Renderer | Set up `packages/markdown-renderer/` with basic Markdown, one theme and the options schema. | — | [ ] |
+| M0.1 | Tool NFRs | Set the tool's own non-functional requirements (API and preview performance, input limits, security, privacy) from the spike numbers, and record them in `tools/markdown-to-pdf/README.md`. | — | [ ] |
+| M0.2 | Create the tool package | `tools/markdown-to-pdf/` (`@goblin/tool-markdown-to-pdf`) with UI and API; place it in the `Document Tools` vault and connect it to the app. | — | [ ] |
+| M0.3 | Markdown Renderer | Set up `src/renderer/` (built to `assets/`) with basic Markdown and one theme, and the options schema in `src/shared/`. | M0.2 | [ ] |
 | M0.4 | Tool infrastructure | Blob store, env, daily cleanup cron; function memory and `maxDuration`; packaging Chromium, the renderer and fonts into the function. | — | [ ] |
 | M0.5 | Chromium locally and in CI | Locally, use the installed Chrome; CI on Linux uses the exact `@sparticuz/chromium` used in production. | M0.4 | [ ] |
 
@@ -32,10 +32,10 @@ Each slice defines the status codes and headers for the cases it implements, the
 
 | ID | Task | Description | Depends on | Status |
 |---|---|---|---|---|
-| M1.1 | PDF Renderer | Chromium loads the `packages/markdown-renderer/` bundle and theme, renders basic Markdown, prints the PDF. | — | [ ] |
+| M1.1 | PDF Renderer | Chromium loads the renderer bundle and theme from `assets/`, renders basic Markdown, prints the PDF. | — | [ ] |
 | M1.2 | File Storage | Upload the PDF to Vercel Blob under a random name, return the URL and `expiresAt`; delete files older than 1 hour on each new request; daily cron as a safety net. | — | [ ] |
 | M1.3 | Md2Pdf API | `POST /api/tools/markdown-to-pdf`: validate, render, upload; errors as `code` + `message`. | M1.1, M1.2 | [ ] |
-| M1.4 | Editor and preview | Editor, `.md` file upload, live preview with `packages/markdown-renderer/`, split side by side on desktop. | — | [ ] |
+| M1.4 | Editor and preview | Editor, `.md` file upload, live preview with the Markdown Renderer, split side by side on desktop. | — | [ ] |
 | M1.5 | Reformat | A button that reformats the Markdown without changing what is rendered. | M1.4 | [ ] |
 | M1.6 | PDF download | Download button, loading state, errors shown by `code`. | M1.3, M1.4 | [ ] |
 | M1.7 | Match test | Automated test comparing a Chrome screenshot of the preview with an image rendered from the PDF; runs in CI. | M1.1, M1.4 | [ ] |
@@ -91,7 +91,7 @@ Each slice defines the status codes and headers for the cases it implements, the
 |---|---|---|---|---|
 | M6.1 | Tool i18n content | Translate every UI string and error message of the tool into `en`/`vi`. The locale mechanism exists from Phase 2 (S6). | — | [ ] |
 | M6.2 | Responsive | Side by side on desktop; switch between editor and preview on mobile. | — | [ ] |
-| M6.3 | Accessibility | Per the non-functional requirements in `docs/INIT_PLAN.md` sections 5 and 6.5. | — | [ ] |
+| M6.3 | Accessibility | Per the shared non-functional requirements in `docs/design/NFR.md` and tool requirements in `tools/markdown-to-pdf/README.md`. | — | [ ] |
 | M6.4 | API docs | Complete the OpenAPI spec and API call examples. | — | [ ] |
 
 **AC:** No untranslated UI strings remain; the UI works on desktop and mobile; the API docs are complete.
@@ -111,7 +111,7 @@ Each slice defines the status codes and headers for the cases it implements, the
 ## Phase AC
 
 - Every slice meets its AC.
-- The tool has the features in `docs/INIT_PLAN.md` section 6.1.
+- The tool has the features in `tools/markdown-to-pdf/README.md`, section "Functional requirements".
 - Input limits and rate limits are set from measurements.
 
 ## Output
