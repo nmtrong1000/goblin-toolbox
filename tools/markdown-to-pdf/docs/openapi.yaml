@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: Goblin Toolbox - Markdown to PDF
+  version: 0.1.0
+  description: |
+    Converts Markdown to a PDF and returns a temporary download URL.
+    No authentication. Rate limited per IP by Vercel WAF.
+    Status codes and headers per case are completed by the Phase 3 slices.
+servers:
+  - url: /
+paths:
+  /api/tools/markdown-to-pdf:
+    post:
+      operationId: createPdf
+      summary: Render Markdown to PDF
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreatePdfRequest"
+      responses:
+        "200":
+          description: PDF created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CreatePdfResponse"
+        default:
+          description: Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    CreatePdfRequest:
+      type: object
+      additionalProperties: false
+      required: [markdown, options]
+      properties:
+        markdown:
+          type: string
+          description: Markdown source. Maximum length is set in Phase 3 (task M5.2); the whole request body must stay under the platform limit of about 4.5 MB.
+        options:
+          $ref: "#/components/schemas/Options"
+    Options:
+      type: object
+      additionalProperties: false
+      required: [pageSize, orientation, margin, pageNumbers, font, theme, colors, headingStyle]
+      properties:
+        pageSize:
+          type: string
+          enum: [A4, A5, Letter, Legal]
+        orientation:
+          type: string
+          enum: [portrait, landscape]
+        margin:
+          type: string
+          enum: [narrow, normal, wide]
+          description: "narrow = 10 mm, normal = 20 mm, wide = 25 mm on every side."
+        pageNumbers:
+          type: boolean
+          description: Shows "n / total" centered in the footer.
+        font:
+          type: string
+          enum: [noto-sans, noto-serif]
+        theme:
+          type: string
+          enum: [default, classic]
+        colors:
+          $ref: "#/components/schemas/Colors"
+        headingStyle:
+          type: string
+          enum: [default, underline]
+          description: "default = colored headings; underline = colored headings with a rule under H1 and H2."
+    Colors:
+      type: object
+      additionalProperties: false
+      required: [text, heading, link]
+      properties:
+        text:
+          $ref: "#/components/schemas/HexColor"
+        heading:
+          $ref: "#/components/schemas/HexColor"
+        link:
+          $ref: "#/components/schemas/HexColor"
+    HexColor:
+      type: string
+      pattern: "^#[0-9a-fA-F]{6}$"
+    CreatePdfResponse:
+      type: object
+      required: [url, expiresAt]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Public URL with a random name. The file is deleted after 1 hour.
+        expiresAt:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Stable error code. The UI translates it; API clients should branch on it. Vercel answers 429 (WAF rate limit) and 413 (body over ~4.5 MB) itself, without this JSON body.
+          enum: [INVALID_REQUEST, MARKDOWN_TOO_LONG, TOO_MANY_ASSETS, RENDER_TIMEOUT, RENDER_FAILED, STORAGE_FAILED, NOT_FOUND, INTERNAL_ERROR]
+        message:
+          type: string
+          description: Human-readable English message.

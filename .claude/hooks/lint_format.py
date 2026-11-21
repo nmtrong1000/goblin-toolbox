@@ -1,6 +1,6 @@
 """Claude Code Stop hook: auto-fix lint and format the files changed in the working tree.
 
-TypeScript, JavaScript, CSS, JSON and HTML files in the npm workspaces and api/ go through oxlint --fix
+TypeScript, JavaScript, CSS, JSON and HTML files in the pnpm workspace packages and api/ go through oxlint --fix
 and prettier --write, using the configs and binaries at the repo root.
 If errors remain that cannot be fixed automatically, the hook blocks the stop once and hands them to Claude;
 when stop_hook_active is already true it only reports them to the user, so it can never loop.
@@ -15,10 +15,10 @@ import sys
 from pathlib import Path
 
 ROOT = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path(__file__).resolve().parents[2])
-SOURCE_DIRS = ("frontend/", "backend/", "packages/", "api/")
+SOURCE_DIRS = ("frontend/", "backend/", "tools/", "api/")
 OXLINT_EXT = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}
 PRETTIER_EXT = OXLINT_EXT | {".css", ".json", ".html"}
-SKIP_NAMES = {"package-lock.json"}
+SKIP_NAMES = {"pnpm-lock.yaml"}
 MAX_REPORT = 4000
 
 
@@ -63,7 +63,7 @@ def main() -> None:
 
     bin_dir = ROOT / "node_modules" / ".bin"
     if not (bin_dir / "oxlint").is_file() or not (bin_dir / "prettier").is_file():
-        print(json.dumps({"systemMessage": "oxlint or prettier is missing: run npm install at the repo root"}))
+        print(json.dumps({"systemMessage": "oxlint or prettier is missing: run pnpm install at the repo root"}))
         return
 
     before = digest(lint + fmt)
