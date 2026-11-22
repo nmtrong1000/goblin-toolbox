@@ -6,7 +6,9 @@
   "regions": ["sin1"],
   "functions": {
     "api/index.ts": {
-      "includeFiles": "backend/dist/**"
+      "includeFiles": "{backend/dist/**,tools/markdown-to-pdf/assets/**}",
+      "memory": 2048,
+      "maxDuration": 60
     }
   },
   "headers": [
@@ -18,5 +20,6 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ]
+  ],
+  "crons": [{ "path": "/api/cron/markdown-to-pdf-cleanup", "schedule": "0 3 * * *" }]
 }

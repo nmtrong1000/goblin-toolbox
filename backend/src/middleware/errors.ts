@@ -14,5 +14,16 @@ export const errorHandler: ErrorRequestHandler = (error, request, response, _nex
       message: error instanceof Error ? error.message : 'Unknown error',
     })}\n`,
   );
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'type' in error &&
+    error.type === 'entity.too.large'
+  ) {
+    response
+      .status(413)
+      .json({ code: 'PAYLOAD_TOO_LARGE', message: 'The request body is too large.' });
+    return;
+  }
   response.status(500).json({ code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' });
 };

@@ -12,12 +12,52 @@ Belongs to the **Document Tools** vault. The tool only outputs PDF.
 - Download PDF; choose page size, orientation, margins, page numbers (on/off), font and theme. Fonts must fully support Vietnamese.
 - Adjust text, heading and link colors and the heading style (H1–H3).
 - The PDF matches the preview.
-- The API accepts JSON with Markdown and options, generates the PDF and returns a download URL; the file is deleted after 1 hour.
+- The API accepts JSON with Markdown and options. Deployed runs upload the PDF to Blob and return a download URL; local development returns the PDF as a direct browser download without Blob storage.
 - The API needs no authentication; it has a basic rate limit.
 
 ## Non-functional requirements
 
-Set during Phase 3, task M0.1, using the measurements in [the Vercel Chromium spike](docs/spikes/0001_CHROMIUM_ON_VERCEL.md) and the shared requirements in [docs/design/NFR.md](../../docs/design/NFR.md).
+### Non-functional requirements
+
+- Render within Vercel's 60-second function duration and 2048 MB memory setting established by spike 0001.
+- Accept at most 100,000 Markdown characters and keep JSON bodies under 4.49 MB, below the measured platform rejection point of 4.5 MB.
+- Do not persist Markdown or log document contents. Store generated PDFs in Vercel Blob with random names and remove them after one hour when cleanup runs.
+- Allow only guarded public HTTP(S) image fetches; enforce DNS/IP checks after redirects, a 5-second per-request timeout, a 15-second image budget, a 5 MB per-image response ceiling, and a 3 MB aggregate ceiling.
+- Allow at most 10 remote images and 10 Mermaid diagrams per document.
+- Reuse Chromium per warm function instance; relaunch after a disconnect. Spike baseline: cold request about 4.5 seconds, warm request 1.0–2.4 seconds, observed memory 320–480 MB.
+- Apply the shared Vercel WAF per-IP rate limit to the API. The existing rule is 5 requests per 10 seconds; revisit it after Phase 3 workload measurements.
+
+The duration and memory baseline comes from [the Vercel Chromium spike](docs/spikes/0001_CHROMIUM_ON_VERCEL.md). Markdown, image and diagram limits are provisional until M5.1 measures representative workloads.
+
+Initial local benchmark on Chrome 157 (Node process RSS; one Chromium instance reused):
+
+| Fixture | Markdown | Images | Diagrams | Render time | Node RSS |
+|---|---:|---:|---:|---:|---:|
+| Small document | 2,517 chars | 0 | 0 | 1,005 ms (first render) | 246 MB |
+| Maximum Markdown input | 100,000 chars | 0 | 0 | 705 ms | 272 MB |
+| Maximum image count | 1,278 chars | 10 | 0 | 611 ms | 205 MB |
+| Maximum Mermaid count | 330 chars | 0 | 10 | 885 ms | 291 MB |
+
+These are local renderer measurements, not Vercel function measurements; the spike observed 320–480 MB system memory on its long fixture. The CI benchmark renders the maximum input, image and diagram counts and writes exact duration and Node RSS values to its log. The 100,000-character, 10-image, and 10-diagram limits remain provisional until the same workload is measured in a Vercel function.
+
+### Runtime configuration
+
+- `BLOB_READ_WRITE_TOKEN`: Vercel Blob read/write token for temporary PDFs.
+- `CRON_SECRET`: bearer token used by the daily expired-file cleanup cron.
+- `LOCAL_CHROME_PATH`: optional local Chrome executable path; Linux CI and Vercel use `@sparticuz/chromium`.
+- `LOCAL_PDF_OUTPUT`: set to `1` by the backend dev script to download PDFs directly during local development.
+
+### API examples
+
+Create a PDF:
+
+```sh
+curl -sS -X POST "$BASE_URL/api/tools/markdown-to-pdf" \
+  -H 'content-type: application/json' \
+  -d '{"markdown":"# Hello\n\nA PDF from Markdown.","options":{"pageSize":"A4","orientation":"portrait","margin":"normal","pageNumbers":true,"font":"noto-sans","theme":"default","colors":{"text":"#1d1b18","heading":"#78351f","link":"#a64f35"},"headingStyle":"default"}}'
+```
+
+The response contains `url` and `expiresAt`. The URL is public and random, and cleanup removes the file after one hour when the cleanup job runs. API errors use `{ "code", "message" }`; Vercel WAF `429` responses do not use this JSON shape.
 
 ## Design
 
