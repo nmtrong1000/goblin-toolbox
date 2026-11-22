@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "tsc -b",
-    "test": "pnpm --filter @goblin/tool-markdown-to-pdf build:renderer && vitest run --exclude '**/ui-test/**'",
+    "test": "pnpm --filter @goblin/tool-markdown-to-pdf build:renderer && vitest run --no-file-parallelism --exclude '**/ui-test/**'",
     "test:ui": "playwright test"
   },
   "dependencies": {
