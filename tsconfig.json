@@ -9,5 +9,10 @@
     "baseUrl": ".",
     "paths": { "#/*": ["backend/src/*"] }
   },
-  "references": [{ "path": "./frontend" }, { "path": "./backend" }, { "path": "./api" }]
+  "references": [
+    { "path": "./frontend" },
+    { "path": "./backend" },
+    { "path": "./api" },
+    { "path": "./tools/markdown-to-pdf" }
+  ]
 }

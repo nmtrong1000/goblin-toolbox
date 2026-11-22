@@ -1,4 +1,5 @@
 import type { ComponentType, LazyExoticComponent } from 'react';
+import { lazy } from 'react';
 
 export type ToolDefinition = {
   component: LazyExoticComponent<ComponentType>;
@@ -15,5 +16,20 @@ export type VaultDefinition = {
   descriptionKey: string;
 };
 
-export const tools: ToolDefinition[] = [];
-export const vaults: VaultDefinition[] = [];
+export const tools: ToolDefinition[] = [
+  {
+    component: lazy(() => import('@goblin/tool-markdown-to-pdf/ui')),
+    slug: 'markdown-to-pdf',
+    vault: 'document-tools',
+    nameKey: 'tool.markdownToPdf.name',
+    descriptionKey: 'tool.markdownToPdf.description',
+    keywords: ['markdown', 'pdf', 'document', 'convert'],
+  },
+];
+export const vaults: VaultDefinition[] = [
+  {
+    slug: 'document-tools',
+    nameKey: 'vault.documentTools.name',
+    descriptionKey: 'vault.documentTools.description',
+  },
+];

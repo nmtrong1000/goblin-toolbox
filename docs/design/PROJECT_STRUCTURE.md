@@ -97,7 +97,7 @@ Base `vercel.json` (Phase 2):
   "outputDirectory": "frontend/dist",
   "regions": ["sin1"],
   "functions": {
-    "api/index.ts": { "includeFiles": "backend/dist/**" }
+    "api/index.ts": { "includeFiles": "{backend/dist/**,tools/markdown-to-pdf/assets/**}", "memory": 2048, "maxDuration": 60 }
   },
   "headers": [
     {
@@ -126,9 +126,9 @@ Base `vercel.json` (Phase 2):
 
 | Setting | Value | Required by |
 |---|---|---|
-| memory | default | — |
-| `maxDuration` | default | — |
-| `includeFiles` | `backend/dist/**` | Bundled Express app entry point |
+| memory | 2048 MB | Markdown-to-PDF Chromium renderer |
+| `maxDuration` | 60 seconds | Markdown-to-PDF rendering |
+| `includeFiles` | `backend/dist/**`, `tools/markdown-to-pdf/assets/**` | Bundled Express app and renderer |
 | `regions` | `sin1` | Lower measured health latency for the Vietnam audience |
 
 Updated by the phase that builds a tool that needs more.
