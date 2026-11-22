@@ -18,7 +18,12 @@
   },
   "dependencies": {
     "@goblin/tool-markdown-to-pdf": "workspace:*",
+    "@sparticuz/chromium": "^153.0.0",
+    "@vercel/blob": "^2.9.0",
     "express": "^5.1.0",
+    "ipaddr.js": "^2.5.0",
+    "puppeteer-core": "^25.18.1",
+    "undici": "^8.13.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {

@@ -6,10 +6,10 @@
 
 | ID | Task | Description | Depends on | Status |
 |---|---|---|---|---|
-| P1 | Production config | Review env, function memory and `maxDuration`, the cleanup cron, the WAF threshold, the default locale, and the domain if any. | Phase 3 | [ ] |
-| P2 | Production deployment | Merge the reviewed build into `main` to deploy to production. | P1 | [ ] |
+| P1 | Production config | Review env, function memory and `maxDuration`, the cleanup cron, the WAF threshold, the default locale, and the domain if any. | Phase 3 | [x] |
+| P2 | Production deployment | Merge the reviewed build into `main` to deploy to production. | P1 | [x] |
 | P3 | Smoke tests | Check the UI flow and call the API directly on production. | P2 | [ ] |
-| P4 | Rollback drill | Instant Rollback to the previous deployment, then promote the new one again. | P2 | [ ] |
+| P4 | Rollback drill | Instant Rollback to the previous deployment, then promote the new one again. | P2 | [x] |
 | P5 | Documentation | Update the README, runbook and known limitations. | P3 | [ ] |
 
 ## Test
