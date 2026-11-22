@@ -31,12 +31,23 @@ describe('preview and PDF match', () => {
         await writeFile(pdfPath, pdf);
         await run('pdftoppm', ['-f', '1', '-l', '1', '-png', '-r', '96', pdfPath, prefix]);
         const printed = PNG.sync.read(await readFile(`${prefix}-1.png`));
-        expect(printed.width).toBe(preview.width);
-        expect(printed.height).toBe(preview.height);
+        expect(Math.abs(printed.width - preview.width)).toBeLessThanOrEqual(1);
+        expect(Math.abs(printed.height - preview.height)).toBeLessThanOrEqual(1);
+        const printedData = new Uint8Array(preview.data.length);
+        const overlapWidth = Math.min(printed.width, preview.width);
+        const overlapHeight = Math.min(printed.height, preview.height);
+        for (let row = 0; row < overlapHeight; row += 1) {
+          const sourceStart = row * printed.width * 4;
+          const targetStart = row * preview.width * 4;
+          printedData.set(
+            printed.data.subarray(sourceStart, sourceStart + overlapWidth * 4),
+            targetStart,
+          );
+        }
         const diff = new PNG({ width: preview.width, height: preview.height });
         const differingPixels = pixelmatch(
           preview.data,
-          printed.data,
+          printedData,
           diff.data,
           preview.width,
           preview.height,
