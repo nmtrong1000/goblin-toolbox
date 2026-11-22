@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "skipLibCheck": true,
+    "strict": true,
+    "baseUrl": ".",
+    "paths": { "#/*": ["backend/src/*"] }
+  },
+  "references": [{ "path": "./frontend" }, { "path": "./backend" }, { "path": "./api" }]
+}

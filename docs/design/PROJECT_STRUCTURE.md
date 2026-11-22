@@ -83,7 +83,7 @@ Rules:
 
 - Inside every package: Node.js subpath imports, declared in that package's `package.json` as `"imports": { "#/*": "./src/*" }`, used as `import { x } from "#/api/router.js"`. Node resolves them at runtime (locally and in the Vercel Function), Vite resolves them for the browser, TypeScript resolves them with `moduleResolution: "bundler"` or `"nodenext"`. No relative `./` or `../` paths.
 - Across packages: by package name and export, e.g. `@goblin/tool-<slug>/api`; never by a path into another package.
-- Verified in Phase 2 (S3, S9): local dev, Vite build, and the Vercel Function. If one of them rejects `#/`, the fallback is decided then and `docs/WORKFLOW.md`, section "Import rules", is updated.
+- Verified in Phase 2 (S3, S9): local dev, Vite build, and the Vercel Function. If one of them rejects `#/`, the fallback is decided then and [docs/WORKFLOW.md](../WORKFLOW.md), section "Import rules", is updated.
 
 ## Vercel
 
@@ -95,6 +95,18 @@ Base `vercel.json` (Phase 2):
   "installCommand": "pnpm install --frozen-lockfile",
   "buildCommand": "pnpm build",
   "outputDirectory": "frontend/dist",
+  "regions": ["sin1"],
+  "functions": {
+    "api/index.ts": { "includeFiles": "backend/dist/**" }
+  },
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
@@ -103,10 +115,11 @@ Base `vercel.json` (Phase 2):
 ```
 
 - `api/index.ts` only re-exports the Express app from `@goblin/api`.
+- `pnpm build` bundles the backend source into `backend/dist/app.cjs` before building the frontend. The local API runner still uses TypeScript source through `tsx`.
 - Static files are matched before rewrites, so the SPA fallback only catches unknown paths.
-- `functions["api/index.ts"]`: memory, `maxDuration` and `includeFiles` take the largest value any tool declares; `includeFiles` is the union of all tools' bundled folders. Current values are in section "Current function settings".
+- `functions["api/index.ts"]`: memory and `maxDuration` take the largest value any tool declares. The bundled CommonJS app is included with `includeFiles`; tool API code and its dependencies are bundled into it. Current values are in section "Current function settings".
 - `crons`: one entry per tool job, path `/api/cron/<slug>-<job>`.
-- `regions`: one region for the whole function, set in Phase 2 after measuring `iad1` vs `sin1`.
+- `regions`: one region for the whole function. Phase 2 measured the health endpoint in `iad1` and `sin1`; `sin1` is selected for the Vietnam audience.
 - Env vars: `CRON_SECRET` (shared) plus whatever each tool declares. Local values come from `vercel env pull .env.local` (gitignored).
 
 ## Current function settings
@@ -115,7 +128,8 @@ Base `vercel.json` (Phase 2):
 |---|---|---|
 | memory | default | — |
 | `maxDuration` | default | — |
-| `includeFiles` | none | — |
+| `includeFiles` | `backend/dist/**` | Bundled Express app entry point |
+| `regions` | `sin1` | Lower measured health latency for the Vietnam audience |
 
 Updated by the phase that builds a tool that needs more.
 
@@ -125,7 +139,7 @@ Every tool's API code and dependencies end up in the one Vercel Function, so its
 
 ## Local workflow
 
-1. Node.js 22.x (`engines` in `package.json`), `corepack enable`, `pnpm install`.
+1. Node.js 26.x LTS (`engines` in `package.json`), `corepack enable`, `pnpm install`.
 2. `vercel env pull .env.local` when a tool needs env vars.
 3. `pnpm dev`: Vite on `:5173` with `/api` proxied to Express on `:3000`.
 4. `pnpm build && pnpm preview`: the built frontend with the same proxy, to check deep links and the SPA fallback.

@@ -21,6 +21,28 @@ The MVP has one tool: **Markdown to PDF**.
 | Toolbox design | [docs/design/HLD.md](docs/design/HLD.md) |
 | Shared visual design system | [docs/design/DESIGN.md](docs/design/DESIGN.md) |
 | Tool requirements | `tools/<slug>/README.md`, e.g. [Markdown to PDF](tools/markdown-to-pdf/README.md) |
-| Tool documents | `tools/<slug>/docs/`, e.g. [Markdown to PDF documents](tools/markdown-to-pdf/docs/) |
+| Tool documents | `tools/<slug>/docs/`, e.g. `tools/markdown-to-pdf/docs/` |
 
-Setup and local run instructions are added in Phase 2.
+## Requirements
+
+- Node.js 26.x (LTS)
+- pnpm 12.21.0 (Corepack can activate the pinned version)
+
+## Setup and local development
+
+```sh
+corepack enable
+pnpm install
+pnpm dev
+```
+
+The frontend runs at <http://localhost:5173>. Vite proxies `/api/*` to the Express server on port 3000. The health endpoint is available at <http://localhost:5173/api/health>.
+
+To check the production build locally:
+
+```sh
+pnpm build
+pnpm preview
+```
+
+Vite preview runs at <http://localhost:4173> and keeps the API proxy enabled. Run `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, and `pnpm test` before opening a pull request.
