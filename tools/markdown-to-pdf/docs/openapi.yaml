@@ -5,7 +5,7 @@ info:
   description: |
     Converts Markdown to a PDF and returns a temporary download URL.
     No authentication. Rate limited per IP by Vercel WAF.
-    Status codes and headers per case are completed by the Phase 3 slices.
+    Requests over 4.49 MB may be rejected by the platform before this API runs.
 servers:
   - url: /
 paths:
@@ -21,18 +21,124 @@ paths:
               $ref: "#/components/schemas/CreatePdfRequest"
       responses:
         "200":
-          description: PDF created
+          description: PDF created. Local development returns the PDF directly when LOCAL_PDF_OUTPUT=1.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/CreatePdfResponse"
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        "400":
+          description: Invalid request or options
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: Markdown or platform request size limit exceeded
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: Rendering or storage failed
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              example: no-store
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "504":
+          description: Rendering timed out
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vercel WAF rate limit; response body is platform-defined
         default:
           description: Error
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/Error"
+  /api/tools/markdown-to-pdf/preview:
+    post:
+      operationId: preparePreview
+      summary: Resolve public images for the live preview
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [markdown]
+              properties:
+                markdown:
+                  type: string
+                  maxLength: 100000
+      responses:
+        "200":
+          description: Markdown with guarded images embedded as data URLs
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [markdown]
+                properties:
+                  markdown:
+                    type: string
+        "400":
+          description: Invalid Markdown input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "413":
+          description: Too many images or aggregate image size exceeded
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: Vercel WAF rate limit; response body is platform-defined
+  /api/cron/markdown-to-pdf-cleanup:
+    get:
+      operationId: cleanupTemporaryPdfs
+      summary: Delete expired Markdown to PDF files
+      security:
+        - cronBearer: []
+      responses:
+        "200":
+          description: Expired files removed
+        "401":
+          description: CRON_SECRET is missing or invalid
 components:
+  securitySchemes:
+    cronBearer:
+      type: http
+      scheme: bearer
   schemas:
     CreatePdfRequest:
       type: object
@@ -41,7 +147,8 @@ components:
       properties:
         markdown:
           type: string
-          description: Markdown source. Maximum length is set in Phase 3 (task M5.2); the whole request body must stay under the platform limit of about 4.5 MB.
+          description: Markdown source, up to 100,000 characters. The whole request body must stay under the platform limit of about 4.5 MB.
+          maxLength: 100000
         options:
           $ref: "#/components/schemas/Options"
     Options:
@@ -106,7 +213,7 @@ components:
         code:
           type: string
           description: Stable error code. The UI translates it; API clients should branch on it. Vercel answers 429 (WAF rate limit) and 413 (body over ~4.5 MB) itself, without this JSON body.
-          enum: [INVALID_REQUEST, MARKDOWN_TOO_LONG, TOO_MANY_ASSETS, RENDER_TIMEOUT, RENDER_FAILED, STORAGE_FAILED, NOT_FOUND, INTERNAL_ERROR]
+          enum: [INVALID_REQUEST, MARKDOWN_TOO_LONG, TOO_MANY_ASSETS, RENDER_TIMEOUT, RENDER_FAILED, STORAGE_FAILED, NOT_FOUND, INTERNAL_ERROR, UNAUTHORIZED, PAYLOAD_TOO_LARGE]
         message:
           type: string
           description: Human-readable English message.
