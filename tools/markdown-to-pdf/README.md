@@ -25,7 +25,7 @@ Belongs to the **Document Tools** vault. The tool only outputs PDF.
 - Allow only guarded public HTTP(S) image fetches; enforce DNS/IP checks after redirects, a 5-second per-request timeout, a 15-second image budget, a 5 MB per-image response ceiling, and a 3 MB aggregate ceiling.
 - Allow at most 10 remote images and 10 Mermaid diagrams per document.
 - Reuse Chromium per warm function instance; relaunch after a disconnect. Spike baseline: cold request about 4.5 seconds, warm request 1.0–2.4 seconds, observed memory 320–480 MB.
-- Apply the shared Vercel WAF per-IP rate limit to the API. The existing rule is 5 requests per 10 seconds; revisit it after Phase 3 workload measurements.
+- Apply the shared Vercel WAF per-IP rate limit to the API. The production rule currently allows 100 requests per IP per 60 seconds on `/api/`; revisit it against real traffic before tightening it.
 
 The duration and memory baseline comes from [the Vercel Chromium spike](docs/spikes/0001_CHROMIUM_ON_VERCEL.md). Markdown, image and diagram limits are provisional until M5.1 measures representative workloads.
 
@@ -42,8 +42,8 @@ These are local renderer measurements, not Vercel function measurements; the spi
 
 ### Runtime configuration
 
-- `BLOB_READ_WRITE_TOKEN`: Vercel Blob read/write token for temporary PDFs.
-- `CRON_SECRET`: bearer token used by the daily expired-file cleanup cron.
+- Production Blob access uses Vercel OIDC through `VERCEL_OIDC_TOKEN` and `BLOB_STORE_ID`; Vercel injects the short-lived OIDC token. Local development can use `BLOB_READ_WRITE_TOKEN`.
+- `CRON_SECRET`: sensitive production bearer token used by the daily expired-file cleanup cron.
 - `LOCAL_CHROME_PATH`: optional local Chrome executable path; Linux CI and Vercel use `@sparticuz/chromium`.
 - `LOCAL_PDF_OUTPUT`: set to `1` by the backend dev script to download PDFs directly during local development.
 

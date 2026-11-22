@@ -1,11 +1,10 @@
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import chromium from '@sparticuz/chromium';
-import puppeteer from 'puppeteer-core';
+import type { Browser } from 'puppeteer-core';
 import type { PdfOptions } from '#/shared/options.js';
 
-let browser: Awaited<ReturnType<typeof puppeteer.launch>> | undefined;
+let browser: Browser | undefined;
 const packageRoot =
   [
     path.resolve(process.cwd(), 'tools/markdown-to-pdf'),
@@ -70,9 +69,15 @@ export async function renderPreviewScreenshot(markdown: string, options: PdfOpti
 async function createRenderPage(markdown: string, options: PdfOptions) {
   if (!browser?.connected) {
     const localChrome = localChromePath();
+    const puppeteer = (await import('puppeteer-core')).default;
+    const launchOptions = localChrome
+      ? { args: ['--no-sandbox', '--disable-setuid-sandbox'], executablePath: localChrome }
+      : await (async () => {
+          const chromium = (await import('@sparticuz/chromium')).default;
+          return { args: chromium.args, executablePath: await chromium.executablePath() };
+        })();
     browser = await puppeteer.launch({
-      args: localChrome ? ['--no-sandbox', '--disable-setuid-sandbox'] : chromium.args,
-      executablePath: localChrome ?? (await chromium.executablePath()),
+      ...launchOptions,
       headless: true,
     });
   }
