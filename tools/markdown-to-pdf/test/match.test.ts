@@ -22,7 +22,7 @@ describe('preview and PDF match', () => {
       const markdown =
         '# Goblin Gazette\n\nTiếng Việt renders in Noto Sans.\n\n| Column | Value |\n| --- | --- |\n| One | Two |\n\n```ts\nconst answer = 42;\n```\n\nThe formula $e^{i\\pi}+1=0$ is balanced.';
       const options = { ...defaultOptions, pageNumbers: false };
-      const preview = PNG.sync.read(await renderPreviewScreenshot(markdown, options));
+      const preview = PNG.sync.read(Buffer.from(await renderPreviewScreenshot(markdown, options)));
       const pdf = await renderPdf(markdown, options);
       const directory = await mkdtemp(path.join(tmpdir(), 'markdown-to-pdf-match-'));
       try {
