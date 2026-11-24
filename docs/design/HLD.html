@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Goblin Toolbox — High-level design</title>
+    <style>
+      :root {
+        --bg: #faf7f2;
+        --lane: #efe9df;
+        --panel: #ffffff;
+        --line: #c3b7a5;
+        --ink: #241f1a;
+        --ink-soft: #6a5e50;
+        --accent: #b4441f;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #15120f;
+          --lane: #211c17;
+          --panel: #2b251e;
+          --line: #574b3e;
+          --ink: #f1e8dc;
+          --ink-soft: #b5a695;
+          --accent: #f08a5a;
+        }
+      }
+      body {
+        margin: 0;
+        padding: 36px 24px 64px;
+        background: var(--bg);
+        color: var(--ink);
+        font-family:
+          ui-sans-serif,
+          -apple-system,
+          'Segoe UI',
+          'Noto Sans',
+          system-ui,
+          sans-serif;
+      }
+      main {
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 8px;
+      }
+      h2 {
+        font-size: 1.1rem;
+        margin: 48px 0 12px;
+      }
+      p,
+      li {
+        line-height: 1.6;
+      }
+      ul {
+        padding-left: 1.3em;
+      }
+      code {
+        font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+        font-size: 0.9em;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 10px 12px;
+        border-bottom: 1px solid var(--line);
+        line-height: 1.5;
+      }
+      th {
+        color: var(--ink-soft);
+        font-weight: 650;
+      }
+      svg {
+        display: block;
+        width: 100%;
+        height: auto;
+        color: var(--ink-soft);
+      }
+      rect.b {
+        fill: var(--panel);
+        stroke: var(--line);
+        stroke-width: 1.2;
+      }
+      rect.x {
+        fill: var(--lane);
+        stroke: var(--line);
+        stroke-width: 1.2;
+      }
+      rect.acc {
+        stroke: var(--accent);
+        stroke-width: 2;
+      }
+      rect.bd {
+        fill: none;
+        stroke: var(--line);
+        stroke-width: 1.4;
+        stroke-dasharray: 7 5;
+      }
+      text.t {
+        font-size: 15px;
+        font-weight: 650;
+        fill: var(--ink);
+      }
+      text.k {
+        font-size: 11px;
+        fill: var(--ink-soft);
+      }
+      text.s {
+        font-size: 12px;
+        fill: var(--ink);
+      }
+      text.l {
+        font-size: 11.5px;
+        fill: var(--ink-soft);
+      }
+      text.bl {
+        font-size: 12.5px;
+        font-weight: 650;
+        fill: var(--ink-soft);
+      }
+      text.n {
+        font-size: 11.5px;
+        font-weight: 700;
+        fill: var(--accent);
+      }
+      line.e,
+      path.e {
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        marker-end: url(#ah);
+      }
+      line.ea {
+        stroke: var(--accent);
+        stroke-width: 1.8;
+        marker-end: url(#aha);
+      }
+      line.r {
+        stroke: currentColor;
+        stroke-width: 1.3;
+        stroke-dasharray: 5 4;
+        marker-end: url(#ah);
+      }
+      line.life {
+        stroke: var(--line);
+        stroke-width: 1.2;
+        stroke-dasharray: 3 4;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Goblin Toolbox — high-level design</h1>
+
+      <h2>Overview</h2>
+      <p>
+        Goblin Toolbox is a set of <strong>tools</strong> grouped into <strong>vaults</strong>. Each
+        tool has a UI and an API. The architecture uses <strong>micro-frontends</strong> for the UI
+        and <strong>microservices</strong> for the API, but
+        <strong>everything is deployed as one</strong>.
+      </p>
+      <ul>
+        <li>
+          <strong>Micro-frontends with Module Federation.</strong> The <strong>Host</strong> is the
+          only app users open. Each tool's UI is a <strong>remote</strong>: a separate static build
+          that the Host loads at runtime and shows in the tool page. React, React Router, i18next
+          and the UI kit are shared, so they load only once.
+        </li>
+        <li>
+          <strong>One microservice per tool.</strong> Each tool's API is its own Express service in
+          its own Vercel Function, with its own memory and time limit. A heavy tool does not slow
+          down or bloat the others. The UI remote calls it with <code>fetch</code> over HTTPS with
+          JSON, through Edge on the same domain (no CORS). Both sides share the tool's Zod schemas.
+        </li>
+        <li>
+          <strong>Tool = UI remote + API service.</strong> Both live in one tool package and always
+          change together.
+        </li>
+        <li>
+          <strong>Static catalog.</strong> Each tool has a manifest. The Host's vault config says
+          which tool is in which vault. A build step merges them into <code>catalog.json</code>.
+          Adding a tool does not change Host code.
+        </li>
+        <li>
+          <strong>One deployment.</strong> One Vercel project with Vercel Services. Every service
+          builds on its own, but all of them ship and roll back together. Edge sends each path to
+          the right service.
+        </li>
+      </ul>
+
+      <svg width="0" height="0" style="position: absolute" aria-hidden="true">
+        <defs>
+          <marker
+            id="ah"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto"
+          >
+            <path d="M0,0 L10,5 L0,10 z" fill="currentColor" />
+          </marker>
+          <marker
+            id="aha"
+            viewBox="0 0 10 10"
+            refX="9"
+            refY="5"
+            markerWidth="7"
+            markerHeight="7"
+            orient="auto"
+          >
+            <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)" />
+          </marker>
+        </defs>
+      </svg>
+
+      <h2>C1 · System context</h2>
+      <svg
+        viewBox="0 0 940 380"
+        role="img"
+        aria-label="Users and API clients use Goblin Toolbox, which depends on each tool's external dependencies."
+      >
+        <rect class="b" x="40" y="40" width="240" height="96" rx="8" />
+        <text class="t" x="54" y="66">User</text>
+        <text class="k" x="54" y="84">[Person]</text>
+        <text class="s" x="54" y="104">Uses tools in the browser</text>
+
+        <rect class="x" x="40" y="244" width="240" height="96" rx="8" />
+        <text class="t" x="54" y="270">API Client</text>
+        <text class="k" x="54" y="288">[External system]</text>
+        <text class="s" x="54" y="308">Calls a tool's API directly</text>
+
+        <rect class="b acc" x="350" y="142" width="240" height="96" rx="8" />
+        <text class="t" x="364" y="168">Goblin Toolbox</text>
+        <text class="k" x="364" y="186">[Software system]</text>
+        <text class="s" x="364" y="206">Vaults of tools; each tool</text>
+        <text class="s" x="364" y="224">has its own UI and API</text>
+
+        <rect class="x" x="660" y="142" width="240" height="96" rx="8" />
+        <text class="t" x="674" y="168">Tool Dependencies</text>
+        <text class="k" x="674" y="186">[External systems]</text>
+        <text class="s" x="674" y="206">Storage and services that</text>
+        <text class="s" x="674" y="224">a tool declares it needs</text>
+
+        <line class="e" x1="280" y1="96" x2="348" y2="168" />
+        <text class="l" x="292" y="120">Uses tools [HTTPS]</text>
+        <line class="e" x1="280" y1="284" x2="348" y2="214" />
+        <text class="l" x="292" y="272">Calls /api/tools/&lt;slug&gt; [HTTPS, JSON]</text>
+        <line class="e" x1="590" y1="190" x2="658" y2="190" />
+        <text class="l" x="624" y="180" text-anchor="middle">Reads, writes</text>
+      </svg>
+
+      <h2>C2 · Containers — one Vercel project, Vercel Services, one deployment</h2>
+      <svg
+        viewBox="0 0 1000 700"
+        role="img"
+        aria-label="Edge routes / to the Host, /remotes/slug to each Tool UI Remote and /api/tools/slug to each Tool API Service. The Host mounts remotes with Module Federation; each remote calls its own API service. Vercel Cron calls tool cron routes; API services use tool dependencies."
+      >
+        <rect class="bd" x="250" y="30" width="730" height="490" rx="12" />
+        <text class="bl" x="268" y="54">
+          Goblin Toolbox [Vercel project · Services · one deployment]
+        </text>
+
+        <rect class="b" x="30" y="64" width="190" height="96" rx="8" />
+        <text class="t" x="44" y="90">User</text>
+        <text class="k" x="44" y="108">[Person, browser]</text>
+        <text class="s" x="44" y="128">Opens Host pages only:</text>
+        <text class="s" x="44" y="146">/, /vaults/*, /tools/*</text>
+
+        <rect class="x" x="30" y="224" width="190" height="96" rx="8" />
+        <text class="t" x="44" y="250">API Client</text>
+        <text class="k" x="44" y="268">[External system]</text>
+        <text class="s" x="44" y="288">Calls tool APIs</text>
+
+        <rect class="b" x="290" y="70" width="665" height="84" rx="8" />
+        <text class="t" x="304" y="96">Edge</text>
+        <text class="k" x="304" y="114">[Vercel CDN · WAF · services route table]</text>
+        <text class="s" x="304" y="136">
+          Routes each path prefix to one service · per-IP rate limit on /api/*
+        </text>
+
+        <rect class="b acc" x="290" y="228" width="170" height="96" rx="8" />
+        <text class="t" x="304" y="254">Host</text>
+        <text class="k" x="304" y="272">[Vite SPA · static service]</text>
+        <text class="s" x="304" y="292">Shell, search, i18n,</text>
+        <text class="s" x="304" y="310">catalog, shared deps</text>
+
+        <rect class="bd" x="526" y="214" width="446" height="148" rx="10" />
+        <text class="bl" x="540" y="354">Tool &lt;slug&gt; [tool package] ×N</text>
+
+        <rect class="x" x="552" y="240" width="190" height="96" rx="8" />
+        <rect class="x" x="546" y="234" width="190" height="96" rx="8" />
+        <rect class="b acc" x="540" y="228" width="190" height="96" rx="8" />
+        <text class="t" x="554" y="254">Tool UI Remote</text>
+        <text class="k" x="554" y="272">[Vite + MF · static service]</text>
+        <text class="s" x="554" y="292">One per tool, served at</text>
+        <text class="s" x="554" y="310">/remotes/&lt;slug&gt;/</text>
+
+        <rect class="x" x="802" y="240" width="165" height="96" rx="8" />
+        <rect class="x" x="796" y="234" width="165" height="96" rx="8" />
+        <rect class="b acc" x="790" y="228" width="165" height="96" rx="8" />
+        <text class="t" x="804" y="254">Tool API Service</text>
+        <text class="k" x="804" y="272">[Express · own function]</text>
+        <text class="s" x="804" y="292">One per tool, own</text>
+        <text class="s" x="804" y="310">memory and duration</text>
+
+        <rect class="b" x="540" y="410" width="190" height="84" rx="8" />
+        <text class="t" x="554" y="436">Scheduled Jobs</text>
+        <text class="k" x="554" y="454">[Vercel Cron]</text>
+        <text class="s" x="554" y="474">Bearer CRON_SECRET</text>
+
+        <rect class="x" x="790" y="580" width="165" height="96" rx="8" />
+        <text class="t" x="804" y="606">Tool Dependencies</text>
+        <text class="k" x="804" y="624">[External systems]</text>
+        <text class="s" x="804" y="644">Vercel Blob, public</text>
+        <text class="s" x="804" y="662">HTTP, per tool</text>
+
+        <line class="e" x1="220" y1="108" x2="288" y2="104" />
+        <text class="l" x="254" y="96" text-anchor="middle">opens pages</text>
+        <line class="e" x1="220" y1="262" x2="288" y2="146" />
+        <text class="l" x="230" y="200">/api/tools/*</text>
+
+        <line class="e" x1="375" y1="154" x2="375" y2="226" />
+        <text class="l" x="383" y="196">/, /vaults/*, /tools/*</text>
+        <line class="r" x1="635" y1="154" x2="635" y2="226" />
+        <text class="l" x="643" y="188">/remotes/&lt;slug&gt;/*</text>
+        <text class="l" x="643" y="204">fetched by Host</text>
+        <line class="e" x1="872" y1="154" x2="872" y2="226" />
+        <text class="l" x="864" y="196" text-anchor="end">/api/tools/&lt;slug&gt;/*</text>
+
+        <line class="ea" x1="460" y1="276" x2="538" y2="276" />
+        <text class="l" x="500" y="266" text-anchor="middle">loads ./Tool</text>
+        <text class="l" x="500" y="296" text-anchor="middle">[MF]</text>
+        <line class="ea" x1="742" y1="276" x2="788" y2="276" />
+        <text class="l" x="766" y="266" text-anchor="middle">calls</text>
+        <text class="l" x="766" y="294" text-anchor="middle">HTTPS</text>
+        <text class="l" x="766" y="308" text-anchor="middle">JSON</text>
+
+        <line class="e" x1="730" y1="440" x2="840" y2="338" />
+        <text class="l" x="752" y="470">GET /api/cron/&lt;slug&gt;-&lt;job&gt;</text>
+        <line class="e" x1="900" y1="338" x2="900" y2="578" />
+        <text class="l" x="892" y="548" text-anchor="end">reads, writes</text>
+
+        <line class="e" x1="30" y1="600" x2="76" y2="600" />
+        <text class="l" x="88" y="604">request routed by Edge or the platform</text>
+        <line class="r" x1="30" y1="630" x2="76" y2="630" />
+        <text class="l" x="88" y="634">
+          file request sent by the Host's MF runtime, never a page the user opens
+        </text>
+        <line class="ea" x1="30" y1="660" x2="76" y2="660" />
+        <text class="l" x="88" y="664">
+          runtime relation inside the browser; its HTTP goes through Edge
+        </text>
+      </svg>
+
+      <h2>C3 · Components — Host</h2>
+      <svg
+        viewBox="0 0 1060 760"
+        role="img"
+        aria-label="Inside the Host: Shell, Pages, Remote Loader, I18n, Catalog Loader, Shared Deps and catalog.json. At build time Catalog Build merges tool manifests and the vault config into catalog.json."
+      >
+        <rect class="bd" x="225" y="40" width="635" height="510" rx="12" />
+        <text class="bl" x="243" y="64">Host [Vite SPA · static service]</text>
+
+        <rect class="b" x="30" y="80" width="160" height="96" rx="8" />
+        <text class="t" x="44" y="106">User</text>
+        <text class="k" x="44" y="124">[Person, browser]</text>
+        <text class="s" x="44" y="144">Opens /, /vaults/*,</text>
+        <text class="s" x="44" y="162">/tools/&lt;slug&gt;</text>
+
+        <rect class="b" x="250" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="264" y="106">Shell</text>
+        <text class="k" x="264" y="124">[React · React Router]</text>
+        <text class="s" x="264" y="144">layout, routes, locale</text>
+        <text class="s" x="264" y="162">switch, error boundary</text>
+
+        <rect class="b" x="460" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="474" y="106">Pages</text>
+        <text class="k" x="474" y="124">[React]</text>
+        <text class="s" x="474" y="144">home search, vault</text>
+        <text class="s" x="474" y="162">page, tool page</text>
+
+        <rect class="b acc" x="670" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="684" y="106">Remote Loader</text>
+        <text class="k" x="684" y="124">[Module Federation runtime]</text>
+        <text class="s" x="684" y="144">loads a remote by</text>
+        <text class="s" x="684" y="162">slug, mounts ./Tool</text>
+
+        <rect class="b" x="250" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="264" y="276">I18n</text>
+        <text class="k" x="264" y="294">[i18next]</text>
+        <text class="s" x="264" y="314">shell strings, locale;</text>
+        <text class="s" x="264" y="332">one shared instance</text>
+
+        <rect class="b" x="460" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="474" y="276">Catalog Loader</text>
+        <text class="k" x="474" y="294">[fetch]</text>
+        <text class="s" x="474" y="314">tools, vaults, names</text>
+        <text class="s" x="474" y="332">in en and vi</text>
+
+        <rect class="b" x="670" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="684" y="276">Shared Deps</text>
+        <text class="k" x="684" y="294">[MF share scope, singletons]</text>
+        <text class="s" x="684" y="314">react, react-dom,</text>
+        <text class="s" x="684" y="332">router, i18next, ui-kit</text>
+
+        <rect class="b" x="460" y="420" width="170" height="96" rx="8" />
+        <text class="t" x="474" y="446">catalog.json</text>
+        <text class="k" x="474" y="464">[static file]</text>
+        <text class="s" x="474" y="484">tools, vaults, remote</text>
+        <text class="s" x="474" y="502">URLs, names en/vi</text>
+
+        <rect class="x" x="885" y="80" width="150" height="96" rx="8" />
+        <text class="t" x="899" y="106">Tool UI Remote</text>
+        <text class="k" x="899" y="124">[Container]</text>
+        <text class="s" x="899" y="144">/remotes/&lt;slug&gt;/</text>
+        <text class="s" x="899" y="162">remoteEntry.js</text>
+
+        <rect class="bd" x="225" y="590" width="635" height="156" rx="12" />
+        <text class="bl" x="243" y="614">Build time [pnpm build]</text>
+
+        <rect class="b" x="250" y="630" width="170" height="96" rx="8" />
+        <text class="t" x="264" y="656">Tool Manifests</text>
+        <text class="k" x="264" y="674">[one per tool package]</text>
+        <text class="s" x="264" y="694">slug, names, keywords,</text>
+        <text class="s" x="264" y="712">remote URL</text>
+
+        <rect class="b" x="460" y="630" width="170" height="96" rx="8" />
+        <text class="t" x="474" y="656">Catalog Build</text>
+        <text class="k" x="474" y="674">[build script]</text>
+        <text class="s" x="474" y="694">merges manifests</text>
+        <text class="s" x="474" y="712">and vault mapping</text>
+
+        <rect class="b" x="670" y="630" width="170" height="96" rx="8" />
+        <text class="t" x="684" y="656">Vault Config</text>
+        <text class="k" x="684" y="674">[catalog.config.json]</text>
+        <text class="s" x="684" y="694">vaults, tool → vault,</text>
+        <text class="s" x="684" y="712">order</text>
+
+        <line class="e" x1="190" y1="128" x2="248" y2="128" />
+        <line class="e" x1="420" y1="128" x2="458" y2="128" />
+        <line class="ea" x1="630" y1="128" x2="668" y2="128" />
+        <line class="ea" x1="840" y1="128" x2="883" y2="128" />
+        <text class="l" x="862" y="196" text-anchor="middle">GET remoteEntry.js</text>
+
+        <line class="e" x1="335" y1="176" x2="335" y2="248" />
+        <text class="l" x="343" y="216">translates</text>
+        <line class="e" x1="545" y1="176" x2="545" y2="248" />
+        <text class="l" x="553" y="216">lists tools, vaults</text>
+        <line class="e" x1="755" y1="176" x2="755" y2="248" />
+        <text class="l" x="763" y="216">provides shared deps</text>
+        <line class="e" x1="545" y1="346" x2="545" y2="418" />
+        <text class="l" x="553" y="386">GET /catalog.json</text>
+
+        <line class="e" x1="420" y1="678" x2="458" y2="678" />
+        <line class="e" x1="670" y1="678" x2="632" y2="678" />
+        <line class="e" x1="545" y1="630" x2="545" y2="518" />
+        <text class="l" x="553" y="572">writes</text>
+      </svg>
+
+      <h2>C3 · Components — Tool UI Remote (one per tool)</h2>
+      <svg
+        viewBox="0 0 1080 580"
+        role="img"
+        aria-label="Inside a Tool UI Remote: remoteEntry.js exposes Tool Page, which uses Tool Components and Tool I18n; components call the API Client, which uses Shared Schemas from the same tool package as the API service."
+      >
+        <rect class="bd" x="225" y="40" width="635" height="510" rx="12" />
+        <text class="bl" x="243" y="64">
+          Tool UI Remote [Vite + Module Federation · static service]
+        </text>
+
+        <rect class="x" x="30" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="44" y="106">Remote Loader</text>
+        <text class="k" x="44" y="124">[Host component]</text>
+        <text class="s" x="44" y="144">loads remoteEntry.js,</text>
+        <text class="s" x="44" y="162">mounts ./Tool</text>
+
+        <rect class="x" x="30" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="44" y="276">Shared Deps</text>
+        <text class="k" x="44" y="294">[Host share scope]</text>
+        <text class="s" x="44" y="314">react, router, i18next,</text>
+        <text class="s" x="44" y="332">ui-kit</text>
+
+        <rect class="b acc" x="250" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="264" y="106">remoteEntry.js</text>
+        <text class="k" x="264" y="124">[MF container]</text>
+        <text class="s" x="264" y="144">exposes ./Tool,</text>
+        <text class="s" x="264" y="162">declares shared deps</text>
+
+        <rect class="b" x="460" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="474" y="106">Tool Page</text>
+        <text class="k" x="474" y="124">[React · exposed ./Tool]</text>
+        <text class="s" x="474" y="144">entry component</text>
+        <text class="s" x="474" y="162">the host mounts</text>
+
+        <rect class="b" x="670" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="684" y="106">Tool Components</text>
+        <text class="k" x="684" y="124">[React]</text>
+        <text class="s" x="684" y="144">tool-specific UI and</text>
+        <text class="s" x="684" y="162">browser-side logic</text>
+
+        <rect class="b" x="460" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="474" y="276">Tool I18n</text>
+        <text class="k" x="474" y="294">[en.json, vi.json]</text>
+        <text class="s" x="474" y="314">adds tool namespace</text>
+        <text class="s" x="474" y="332">to shared i18next</text>
+
+        <rect class="b" x="670" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="684" y="276">API Client</text>
+        <text class="k" x="684" y="294">[fetch]</text>
+        <text class="s" x="684" y="314">calls its own API,</text>
+        <text class="s" x="684" y="332">maps code to i18n</text>
+
+        <rect class="b" x="670" y="420" width="170" height="96" rx="8" />
+        <text class="t" x="684" y="446">Shared Schemas</text>
+        <text class="k" x="684" y="464">[Zod · tools/&lt;slug&gt;/shared]</text>
+        <text class="s" x="684" y="484">same schemas as</text>
+        <text class="s" x="684" y="502">the API service</text>
+
+        <rect class="x" x="885" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="899" y="276">Tool API Service</text>
+        <text class="k" x="899" y="294">[Container]</text>
+        <text class="s" x="899" y="314">/api/tools/&lt;slug&gt;/*</text>
+
+        <line class="ea" x1="200" y1="128" x2="248" y2="128" />
+        <line class="e" x1="290" y1="176" x2="190" y2="248" />
+        <text class="l" x="250" y="232">consumes</text>
+        <line class="e" x1="420" y1="128" x2="458" y2="128" />
+        <line class="e" x1="630" y1="128" x2="668" y2="128" />
+
+        <line class="e" x1="545" y1="176" x2="545" y2="248" />
+        <text class="l" x="553" y="216">translates</text>
+        <line class="e" x1="755" y1="176" x2="755" y2="248" />
+        <text class="l" x="763" y="216">uses</text>
+        <line class="ea" x1="840" y1="298" x2="883" y2="298" />
+        <text class="l" x="862" y="372" text-anchor="middle">HTTPS, JSON</text>
+        <line class="e" x1="755" y1="346" x2="755" y2="418" />
+        <text class="l" x="763" y="386">validates with</text>
+        <line class="r" x1="940" y1="346" x2="842" y2="458" />
+        <text class="l" x="908" y="420">same package</text>
+      </svg>
+
+      <h2>C3 · Components — Tool API Service (one per tool)</h2>
+      <svg
+        viewBox="0 0 1190 750"
+        role="img"
+        aria-label="Inside a Tool API Service: Edge and Vercel Cron call the Function Entry, which runs the App Factory and shared Middleware from server-kit; requests go to the Tool Router then Validation and Services, or to the Cron Router; Services use Integrations to reach Tool Dependencies. Code layers: routes, services, integrations."
+      >
+        <rect class="bd" x="215" y="40" width="745" height="680" rx="12" />
+        <text class="bl" x="233" y="64">
+          Tool API Service [Node.js · Express · own Vercel Function]
+        </text>
+
+        <rect class="x" x="20" y="80" width="170" height="96" rx="8" />
+        <text class="t" x="34" y="106">Edge</text>
+        <text class="k" x="34" y="124">[Vercel CDN · WAF]</text>
+        <text class="s" x="34" y="144">routes /api/tools/</text>
+        <text class="s" x="34" y="162">&lt;slug&gt;/* here</text>
+
+        <rect class="x" x="20" y="250" width="170" height="96" rx="8" />
+        <text class="t" x="34" y="276">Vercel Cron</text>
+        <text class="k" x="34" y="294">[Scheduler]</text>
+        <text class="s" x="34" y="314">GET with Bearer</text>
+        <text class="s" x="34" y="332">CRON_SECRET</text>
+
+        <rect class="b acc" x="240" y="80" width="150" height="96" rx="8" />
+        <text class="t" x="254" y="106">Function Entry</text>
+        <text class="k" x="254" y="124">[service entrypoint]</text>
+        <text class="s" x="254" y="144">own memory and</text>
+        <text class="s" x="254" y="162">duration settings</text>
+
+        <rect class="b" x="420" y="80" width="150" height="96" rx="8" />
+        <text class="t" x="434" y="106">App Factory</text>
+        <text class="k" x="434" y="124">[@goblin/server-kit]</text>
+        <text class="s" x="434" y="144">createApp(routers)</text>
+        <text class="s" x="434" y="162">builds Express app</text>
+
+        <rect class="b" x="600" y="80" width="150" height="96" rx="8" />
+        <text class="t" x="614" y="106">Middleware</text>
+        <text class="k" x="614" y="124">[@goblin/server-kit]</text>
+        <text class="s" x="614" y="144">id, JSON, log;</text>
+        <text class="s" x="614" y="162">404, error format</text>
+
+        <rect class="b" x="420" y="250" width="150" height="96" rx="8" />
+        <text class="t" x="434" y="276">Cron Router</text>
+        <text class="k" x="434" y="294">[routes/ · Express]</text>
+        <text class="s" x="434" y="314">/api/cron/&lt;slug&gt;-*</text>
+        <text class="s" x="434" y="332">checks CRON_SECRET</text>
+
+        <rect class="b" x="600" y="250" width="150" height="96" rx="8" />
+        <text class="t" x="614" y="276">Tool Router</text>
+        <text class="k" x="614" y="294">[routes/ · Express]</text>
+        <text class="s" x="614" y="314">/api/tools/&lt;slug&gt;/*</text>
+
+        <rect class="b" x="780" y="250" width="150" height="96" rx="8" />
+        <text class="t" x="794" y="276">Validation</text>
+        <text class="k" x="794" y="294">[routes/ · shared Zod]</text>
+        <text class="s" x="794" y="314">rejects bad input</text>
+        <text class="s" x="794" y="332">with an error code</text>
+
+        <rect class="b" x="780" y="420" width="150" height="96" rx="8" />
+        <text class="t" x="794" y="446">Services</text>
+        <text class="k" x="794" y="464">[services/]</text>
+        <text class="s" x="794" y="484">business logic,</text>
+        <text class="s" x="794" y="502">no Express</text>
+
+        <rect class="b" x="780" y="590" width="150" height="96" rx="8" />
+        <text class="t" x="794" y="616">Integrations</text>
+        <text class="k" x="794" y="634">[integrations/]</text>
+        <text class="s" x="794" y="654">Blob, external</text>
+        <text class="s" x="794" y="672">services</text>
+
+        <rect class="x" x="990" y="590" width="180" height="96" rx="8" />
+        <text class="t" x="1004" y="616">Tool Dependencies</text>
+        <text class="k" x="1004" y="634">[External systems]</text>
+        <text class="s" x="1004" y="654">declared in the</text>
+        <text class="s" x="1004" y="672">tool's design</text>
+
+        <line class="e" x1="190" y1="128" x2="238" y2="128" />
+        <line class="e" x1="190" y1="290" x2="238" y2="164" />
+        <line class="e" x1="390" y1="128" x2="418" y2="128" />
+        <line class="e" x1="570" y1="128" x2="598" y2="128" />
+
+        <line class="e" x1="675" y1="176" x2="675" y2="248" />
+        <text class="l" x="683" y="216">routes</text>
+        <line class="e" x1="640" y1="176" x2="530" y2="248" />
+        <text class="l" x="540" y="206">routes</text>
+        <line class="e" x1="750" y1="298" x2="778" y2="298" />
+
+        <line class="e" x1="855" y1="346" x2="855" y2="418" />
+        <text class="l" x="863" y="386">valid input</text>
+        <line class="e" x1="570" y1="330" x2="778" y2="458" />
+        <text class="l" x="610" y="402">runs job</text>
+        <line class="e" x1="855" y1="516" x2="855" y2="588" />
+        <text class="l" x="863" y="556">reads, writes</text>
+        <line class="e" x1="930" y1="638" x2="988" y2="638" />
+      </svg>
+
+      <h2>Dynamic · Opening a tool and calling its API</h2>
+      <svg
+        viewBox="0 0 1060 560"
+        role="img"
+        aria-label="1 browser loads the Host, 2 fetches catalog.json, 3 fetches the tool's remoteEntry.js, 4 loads the ./Tool chunks, 5 mounts the tool, 6 posts to the tool API, 7 the API uses its dependencies, 8 the API answers with JSON or an error code. Every request passes through Edge."
+      >
+        <rect class="b" x="35" y="30" width="170" height="56" rx="8" />
+        <text class="t" x="120" y="54" text-anchor="middle">Host</text>
+        <text class="k" x="120" y="72" text-anchor="middle">[running in the browser]</text>
+        <rect class="b" x="245" y="30" width="170" height="56" rx="8" />
+        <text class="t" x="330" y="54" text-anchor="middle">Host Service</text>
+        <text class="k" x="330" y="72" text-anchor="middle">[static files]</text>
+        <rect class="b" x="455" y="30" width="170" height="56" rx="8" />
+        <text class="t" x="540" y="54" text-anchor="middle">Tool UI Remote</text>
+        <text class="k" x="540" y="72" text-anchor="middle">[static service]</text>
+        <rect class="b" x="665" y="30" width="170" height="56" rx="8" />
+        <text class="t" x="750" y="54" text-anchor="middle">Tool API Service</text>
+        <text class="k" x="750" y="72" text-anchor="middle">[function]</text>
+        <rect class="x" x="875" y="30" width="170" height="56" rx="8" />
+        <text class="t" x="960" y="54" text-anchor="middle">Tool Dependencies</text>
+        <text class="k" x="960" y="72" text-anchor="middle">[external]</text>
+
+        <line class="life" x1="120" y1="86" x2="120" y2="520" />
+        <line class="life" x1="330" y1="86" x2="330" y2="520" />
+        <line class="life" x1="540" y1="86" x2="540" y2="520" />
+        <line class="life" x1="750" y1="86" x2="750" y2="520" />
+        <line class="life" x1="960" y1="86" x2="960" y2="520" />
+
+        <line class="e" x1="120" y1="140" x2="328" y2="140" />
+        <text class="n" x="132" y="132">1</text>
+        <text class="l" x="146" y="132">User opens /tools/&lt;slug&gt; → index.html, shell</text>
+
+        <line class="e" x1="120" y1="190" x2="328" y2="190" />
+        <text class="n" x="132" y="182">2</text>
+        <text class="l" x="146" y="182">GET /catalog.json</text>
+
+        <line class="ea" x1="120" y1="240" x2="538" y2="240" />
+        <text class="n" x="132" y="232">3</text>
+        <text class="l" x="146" y="232">
+          Remote Loader: GET /remotes/&lt;slug&gt;/remoteEntry.js
+        </text>
+
+        <line class="ea" x1="120" y1="290" x2="538" y2="290" />
+        <text class="n" x="132" y="282">4</text>
+        <text class="l" x="146" y="282">
+          Remote Loader: GET ./Tool chunks · react, i18next reused
+        </text>
+
+        <path class="e" d="M120,330 h44 v26 h-42" />
+        <text class="n" x="176" y="350">5</text>
+        <text class="l" x="190" y="350">
+          Host mounts ./Tool inside its /tools/&lt;slug&gt; page
+        </text>
+
+        <line class="ea" x1="120" y1="400" x2="748" y2="400" />
+        <text class="n" x="132" y="392">6</text>
+        <text class="l" x="146" y="392">
+          Tool's API Client: POST /api/tools/&lt;slug&gt;/… [HTTPS, JSON]
+        </text>
+
+        <line class="e" x1="750" y1="440" x2="958" y2="440" />
+        <text class="n" x="762" y="432">7</text>
+        <text class="l" x="776" y="432">reads, writes</text>
+
+        <line class="r" x1="750" y1="490" x2="122" y2="490" />
+        <text class="n" x="590" y="482">8</text>
+        <text class="l" x="604" y="482">JSON, or { code, message }</text>
+
+        <text class="l" x="120" y="548">
+          Every request passes through Edge: WAF rate limit on /api/*, then the services route
+          table.
+        </text>
+      </svg>
+
+      <h2>Trade-offs</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Area</th>
+            <th>What we gain</th>
+            <th>What it costs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Runtime resources</td>
+            <td>
+              Each tool API has its own memory, duration and bundle; a heavy tool does not slow or
+              bloat light ones.
+            </td>
+            <td>2N + 1 services; the route table and total build time grow with every tool.</td>
+          </tr>
+          <tr>
+            <td>Adding a tool</td>
+            <td>A manifest and a vault entry; the Host's code does not change.</td>
+            <td>A build-time catalog step and a manifest contract to keep stable.</td>
+          </tr>
+          <tr>
+            <td>Boundary</td>
+            <td>The Host never imports tool code at build time; tools are isolated units.</td>
+            <td>Shared-dependency mismatches surface as runtime errors, not build errors.</td>
+          </tr>
+          <tr>
+            <td>Shared dependencies</td>
+            <td>React, router, i18next and the UI kit are loaded once and shared.</td>
+            <td>Upgrading any of them means upgrading the Host and every remote together.</td>
+          </tr>
+          <tr>
+            <td>Deploy and rollback</td>
+            <td>One atomic deployment; Host, remotes and APIs never drift apart.</td>
+            <td>Module Federation's main benefit, independent deploys, is not used yet.</td>
+          </tr>
+          <tr>
+            <td>Performance</td>
+            <td>Tool code loads only when its page opens.</td>
+            <td>
+              Two extra requests (<code>catalog.json</code>, <code>remoteEntry.js</code>) before a
+              tool renders.
+            </td>
+          </tr>
+          <tr>
+            <td>Styling</td>
+            <td>Tools share design tokens through the UI kit.</td>
+            <td>Remote CSS shares the Host page and needs scoping rules.</td>
+          </tr>
+          <tr>
+            <td>Development and tests</td>
+            <td>Each tool's UI and API can be built and unit-tested on its own.</td>
+            <td>End-to-end tests and local runs need the Host, remotes and APIs together.</td>
+          </tr>
+          <tr>
+            <td>Platform</td>
+            <td>Routing, rollback and previews stay in one Vercel project.</td>
+            <td>
+              Vercel Services is in beta; Hobby limits on services and build time must be verified.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>

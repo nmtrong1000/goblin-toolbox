@@ -18,7 +18,7 @@ The MVP has one tool: **Markdown to PDF**.
 | Shared non-functional requirements | [docs/design/NFR.md](docs/design/NFR.md) |
 | Phase plans | [P1](docs/phases/P1_DESIGN.md), [P2](docs/phases/P2_SCAFFOLD_AND_DEPLOY.md), [P3](docs/phases/P3_BUILD_MARKDOWN_TO_PDF.md), [P4](docs/phases/P4_DEPLOY_TOOL.md) |
 | How each phase runs | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
-| Toolbox design | [docs/design/HLD.md](docs/design/HLD.md) |
+| Toolbox design | [docs/design/HLD.html](docs/design/HLD.html) |
 | Shared visual design system | [docs/design/DESIGN.md](docs/design/DESIGN.md) |
 | Tool requirements | `tools/<slug>/README.md`, e.g. [Markdown to PDF](tools/markdown-to-pdf/README.md) |
 | Tool documents | `tools/<slug>/docs/`, e.g. `tools/markdown-to-pdf/docs/` |
