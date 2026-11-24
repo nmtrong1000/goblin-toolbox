@@ -24,6 +24,9 @@ playwright-report/
 *.log
 npm-debug.log*
 
+# Python cache from Claude Code hooks
+__pycache__/
+
 # OS and editor
 .DS_Store
 Thumbs.db

@@ -1,4 +1,39 @@
 {
   "$schema": "https://oxc.rs/schemas/oxlintrc.json",
-  "ignorePatterns": ["**/dist/**", "**/node_modules/**"]
+  "ignorePatterns": ["**/dist/**", "**/node_modules/**"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "regex": "^\\.\\.?/",
+            "message": "Use a #/ subpath import inside a package, or the package name across packages."
+          }
+        ]
+      }
+    ]
+  },
+  "overrides": [
+    {
+      "files": ["tools/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^\\.\\.?/",
+                "message": "Use a #/ subpath import inside a package, or the package name across packages."
+              },
+              {
+                "regex": "^@goblin/tool-",
+                "message": "A tool never imports another tool; move shared code to packages/."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

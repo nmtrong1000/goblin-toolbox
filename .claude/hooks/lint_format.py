@@ -1,7 +1,8 @@
 """Claude Code Stop hook: auto-fix lint and format the files changed in the working tree.
 
-TypeScript, JavaScript, CSS, JSON and HTML files in the pnpm workspace packages and api/ go through oxlint --fix
-and prettier --write, using the configs and binaries at the repo root.
+Every changed TypeScript, JavaScript, CSS, JSON and HTML file goes through oxlint --fix and prettier --write,
+using the configs and binaries at the repo root. There is no folder list on purpose, so the hook keeps working
+when packages move; what to skip comes from .prettierignore and ignorePatterns in .oxlintrc.json.
 If errors remain that cannot be fixed automatically, the hook blocks the stop once and hands them to Claude;
 when stop_hook_active is already true it only reports them to the user, so it can never loop.
 Output is capped so a large error list does not flood the context.
@@ -15,7 +16,6 @@ import sys
 from pathlib import Path
 
 ROOT = Path(os.environ.get("CLAUDE_PROJECT_DIR") or Path(__file__).resolve().parents[2])
-SOURCE_DIRS = ("frontend/", "backend/", "tools/", "api/")
 OXLINT_EXT = {".ts", ".tsx", ".js", ".jsx", ".mjs", ".cjs"}
 PRETTIER_EXT = OXLINT_EXT | {".css", ".json", ".html"}
 SKIP_NAMES = {"pnpm-lock.yaml"}
@@ -55,7 +55,7 @@ def run(cmd: list[str]) -> subprocess.CompletedProcess:
 
 def main() -> None:
     payload = json.loads(sys.stdin.read() or "{}")
-    files = [f for f in changed_files() if f.startswith(SOURCE_DIRS) and Path(f).name not in SKIP_NAMES]
+    files = [f for f in changed_files() if Path(f).name not in SKIP_NAMES]
     lint = [f for f in files if Path(f).suffix in OXLINT_EXT]
     fmt = [f for f in files if Path(f).suffix in PRETTIER_EXT]
     if not lint and not fmt:
