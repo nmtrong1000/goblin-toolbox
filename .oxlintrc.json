@@ -1,6 +1,7 @@
 {
   "$schema": "https://oxc.rs/schemas/oxlintrc.json",
-  "ignorePatterns": ["**/dist/**", "**/node_modules/**"],
+  "ignorePatterns": ["**/dist/**", "**/node_modules/**", "**/assets/**"],
+  "plugins": ["typescript", "unicorn", "oxc", "react"],
   "rules": {
     "no-restricted-imports": [
       "error",
@@ -16,6 +17,40 @@
   },
   "overrides": [
     {
+      "files": ["host/src/**/*.tsx", "tools/*/ui/src/**/*.tsx", "packages/*/src/**/*.tsx"],
+      "rules": {
+        "react/no-multi-comp": "error",
+        "max-lines": [
+          "error",
+          {
+            "max": 200,
+            "skipBlankLines": true,
+            "skipComments": true
+          }
+        ]
+      }
+    },
+    {
+      "files": ["host/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^\\.\\.?/",
+                "message": "Use a #/ subpath import inside a package, or the package name across packages."
+              },
+              {
+                "group": ["@goblin/tool-*", "@goblin/tool-*/**"],
+                "message": "The Host never imports tool code; it loads tools through catalog.json."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
       "files": ["tools/**"],
       "rules": {
         "no-restricted-imports": [
@@ -27,7 +62,32 @@
                 "message": "Use a #/ subpath import inside a package, or the package name across packages."
               },
               {
-                "regex": "^@goblin/tool-",
+                "group": ["@goblin/tool-*", "@goblin/tool-*/**"],
+                "message": "A tool never imports another tool; move shared code to packages/."
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "files": ["tools/markdown-to-pdf/**"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "regex": "^\\.\\.?/",
+                "message": "Use a #/ subpath import inside a package, or the package name across packages."
+              },
+              {
+                "group": [
+                  "@goblin/tool-*",
+                  "@goblin/tool-*/**",
+                  "!@goblin/tool-markdown-to-pdf-*",
+                  "!@goblin/tool-markdown-to-pdf-*/**"
+                ],
                 "message": "A tool never imports another tool; move shared code to packages/."
               }
             ]

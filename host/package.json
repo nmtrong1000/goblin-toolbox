@@ -1,0 +1,32 @@
+{
+  "name": "@goblin/host",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {
+    "catalog": "node scripts/build-catalog.mjs",
+    "generate-contracts": "node scripts/generate-contracts.mjs",
+    "dev": "node scripts/build-catalog.mjs && node scripts/generate-contracts.mjs && vite",
+    "build": "node scripts/build-catalog.mjs && node scripts/generate-contracts.mjs && tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@module-federation/runtime": "catalog:",
+    "i18next": "catalog:",
+    "react": "catalog:",
+    "react-dom": "catalog:",
+    "react-i18next": "catalog:",
+    "react-router-dom": "catalog:"
+  },
+  "devDependencies": {
+    "@goblin/ui-kit": "workspace:*",
+    "@module-federation/vite": "catalog:",
+    "@redocly/cli": "catalog:",
+    "@types/react": "catalog:",
+    "@types/react-dom": "catalog:",
+    "@vitejs/plugin-react": "catalog:",
+    "vite": "catalog:"
+  }
+}

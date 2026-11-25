@@ -1,0 +1,22 @@
+{
+  "name": "@goblin/server-kit",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "express": "catalog:"
+  },
+  "devDependencies": {
+    "@types/express": "catalog:",
+    "@types/supertest": "catalog:",
+    "supertest": "catalog:"
+  }
+}

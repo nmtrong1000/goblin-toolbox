@@ -1,25 +1,104 @@
 {
-  "framework": null,
-  "installCommand": "pnpm install --frozen-lockfile",
-  "buildCommand": "pnpm build",
-  "outputDirectory": "frontend/dist",
   "regions": ["sin1"],
-  "functions": {
-    "api/index.ts": {
-      "includeFiles": "{backend/dist/**,tools/markdown-to-pdf/assets/**}",
-      "memory": 2048,
-      "maxDuration": 60
+  "services": {
+    "host": {
+      "root": "host",
+      "framework": "vite",
+      "buildCommand": "pnpm build",
+      "outputDirectory": "dist",
+      "rewrites": [
+        {
+          "source": "/vaults",
+          "destination": "/index.html"
+        },
+        {
+          "source": "/vaults/:path*",
+          "destination": "/index.html"
+        },
+        {
+          "source": "/tools/:path*",
+          "destination": "/index.html"
+        }
+      ],
+      "headers": [
+        {
+          "source": "/assets/(.*)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        }
+      ]
+    },
+    "markdown-to-pdf-ui": {
+      "root": "tools/markdown-to-pdf/ui",
+      "framework": "vite",
+      "buildCommand": "pnpm build",
+      "outputDirectory": "dist",
+      "headers": [
+        {
+          "source": "/remotes/markdown-to-pdf/assets/(.*)",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        }
+      ]
+    },
+    "markdown-to-pdf-api": {
+      "root": "tools/markdown-to-pdf/api",
+      "framework": "express",
+      "buildCommand": "pnpm build",
+      "entrypoint": "src/index.ts",
+      "functions": {
+        "src/index.ts": {
+          "maxDuration": 60,
+          "includeFiles": "assets/**"
+        }
+      },
+      "devCommand": "pnpm dev"
     }
   },
-  "headers": [
+  "rewrites": [
     {
-      "source": "/assets/(.*)",
-      "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }]
+      "source": "/api/tools/markdown-to-pdf",
+      "destination": {
+        "service": "markdown-to-pdf-api"
+      }
+    },
+    {
+      "source": "/api/tools/markdown-to-pdf/(.*)",
+      "destination": {
+        "service": "markdown-to-pdf-api"
+      }
+    },
+    {
+      "source": "/api/cron/markdown-to-pdf-(.*)",
+      "destination": {
+        "service": "markdown-to-pdf-api"
+      }
+    },
+    {
+      "source": "/remotes/markdown-to-pdf/(.*)",
+      "destination": {
+        "service": "markdown-to-pdf-ui"
+      }
+    },
+    {
+      "source": "/(.*)",
+      "destination": {
+        "service": "host"
+      }
     }
   ],
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
-  ],
-  "crons": [{ "path": "/api/cron/markdown-to-pdf-cleanup", "schedule": "0 3 * * *" }]
+  "crons": [
+    {
+      "path": "/api/cron/markdown-to-pdf-cleanup",
+      "schedule": "0 3 * * *"
+    }
+  ]
 }

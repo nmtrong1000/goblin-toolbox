@@ -2,17 +2,17 @@
   "files": [],
   "compilerOptions": {
     "target": "ES2022",
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
-    "skipLibCheck": true,
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "strict": true,
-    "baseUrl": ".",
-    "paths": { "#/*": ["backend/src/*"] }
-  },
-  "references": [
-    { "path": "./frontend" },
-    { "path": "./backend" },
-    { "path": "./api" },
-    { "path": "./tools/markdown-to-pdf" }
-  ]
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "verbatimModuleSyntax": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true
+  }
 }

@@ -1,0 +1,10 @@
+{
+  "slug": "markdown-to-pdf",
+  "name": { "en": "Markdown to PDF", "vi": "Markdown sang PDF" },
+  "description": {
+    "en": "Write, preview, and download a polished PDF from Markdown.",
+    "vi": "Soạn thảo, xem trước và tải PDF từ Markdown."
+  },
+  "keywords": ["markdown", "pdf", "document", "convert"],
+  "remote": "/remotes/markdown-to-pdf/remoteEntry.js"
+}

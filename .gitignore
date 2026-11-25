@@ -5,7 +5,10 @@ node_modules/
 dist/
 build/
 *.tsbuildinfo
-tools/markdown-to-pdf/assets/
+tools/*/shared/assets/
+tools/*/api/assets/
+host/public/catalog.json
+host/public/contracts/
 
 # Environment
 .env

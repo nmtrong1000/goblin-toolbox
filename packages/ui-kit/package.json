@@ -1,0 +1,12 @@
+{
+  "name": "@goblin/ui-kit",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tokens.css": "./src/tokens.css",
+    "./federation": "./src/federation.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  }
+}
