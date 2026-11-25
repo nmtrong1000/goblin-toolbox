@@ -87,5 +87,3 @@ All services roll back together.
 1. **Vercel → Project → Deployments**, open the last known-good production deployment and select **Promote to Production** (or **Instant Rollback**). CLI: `vercel promote <deployment-url> --yes`.
 2. Check that `https://goblin-toolbox.vercel.app` serves that deployment (`vercel inspect goblin-toolbox.vercel.app`) and that every health endpoint returns `200`.
 3. When the fix is ready, merge it into `main`, or promote the newer deployment again the same way.
-
-After a manual promotion Vercel may stop assigning the production domain to new deployments from `main`; if a later merge does not reach the domain, promote that deployment once.

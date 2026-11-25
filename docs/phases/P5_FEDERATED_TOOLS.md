@@ -68,6 +68,7 @@
 - Cron: `vercel crons ls` lists `/api/cron/markdown-to-pdf-cleanup` at `0 3 * * *`; `vercel crons run` invoked it and the function returned `200`.
 - Rollback drill on 2026-11-25: `vercel promote` of the Phase 4 deployment `4x3dv8sso` moved the production alias to it (`/api/health` answered again), then `vercel promote` of `5ikep8wld` restored Phase 5; each step took under 3 seconds.
 - The first GitHub CI run on the new layout failed in `pnpm test:ui`: under `vercel dev` the Host service ran plain `vite`, so `catalog.json` was never generated on a fresh checkout. The Host service now has `devCommand: pnpm dev --port $PORT`, and Vite's dependency scan is limited to `index.html` so the generated contract pages are not parsed.
+- After the fixes, merge `d66665d` passed GitHub CI (lint, format, typecheck, unit tests, Playwright, build) and deployed to production as `https://goblin-toolbox-7po5j98yc-john-does-projects-37100f9f.vercel.app`; the production domain moved to it on its own after the earlier manual promotions. The production smoke checks above were repeated with the same results, a malformed JSON body now returns `400 INVALID_REQUEST`, and its log line holds only `entity.parse.failed`.
 
 ## Risks
 
