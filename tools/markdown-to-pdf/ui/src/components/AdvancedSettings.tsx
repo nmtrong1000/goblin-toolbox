@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
 import { ColorField } from '#/components/ColorField.tsx';
+import { MarginInputs } from '#/components/MarginInputs.tsx';
 import { SegmentedControl } from '#/components/SegmentedControl.tsx';
 import { presetColors } from '#/lib/presets.ts';
 
@@ -62,14 +63,15 @@ export function AdvancedSettings({ options, onChange }: AdvancedSettingsProps) {
           />
           <SegmentedControl
             choices={[
-              { value: 'default', label: t('defaultTheme') },
-              { value: 'classic', label: t('classicTheme') },
+              { value: 'default', label: t('densityComfortable') },
+              { value: 'classic', label: t('densityCompact') },
             ]}
-            legend={t('theme')}
+            legend={t('density')}
             name="mdpdf-theme"
             onChange={(value) => update('theme', value)}
             value={options.theme}
           />
+          <MarginInputs onChange={onChange} options={options} />
           <fieldset className="mdpdf-field">
             <legend className="mdpdf-field-label">{t('colors')}</legend>
             {colorRoles.map(({ role, label }) => (

@@ -145,3 +145,28 @@ test('an unknown page shows the not found state with a way home', async ({ page 
   await page.getByRole('link', { name: 'Back to home' }).click();
   await expect(page).toHaveURL(/\/$/);
 });
+
+test('mobile header folds the nav and language switch into a menu', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/');
+  const nav = page.getByRole('navigation', { name: 'Main navigation' });
+  const menuButton = page.getByRole('button', { name: 'Open menu' });
+
+  await expect(menuButton).toBeVisible();
+  await expect(nav.getByRole('link', { name: 'Vaults' })).toBeHidden();
+
+  await menuButton.click();
+  await expect(page.getByRole('button', { name: 'Close menu' })).toHaveAttribute(
+    'aria-expanded',
+    'true',
+  );
+  await expect(page.getByRole('button', { name: 'VI', exact: true })).toBeVisible();
+  await nav.getByRole('link', { name: 'Vaults' }).click();
+
+  await expect(page).toHaveURL(/\/vaults$/);
+  await expect(page.getByRole('button', { name: 'Open menu' })).toHaveAttribute(
+    'aria-expanded',
+    'false',
+  );
+  await expect(nav.getByRole('link', { name: 'Vaults' })).toBeHidden();
+});

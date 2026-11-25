@@ -3,6 +3,8 @@
   "nav.label": "Điều hướng chính",
   "nav.home": "Trang chủ",
   "nav.vaults": "Kho công cụ",
+  "menu.open": "Mở menu",
+  "menu.close": "Đóng menu",
   "footer.label": "Điều hướng cuối trang",
   "footer.copyright": "© {{year}} Hộp công cụ Goblin",
   "breadcrumb.label": "Đường dẫn",

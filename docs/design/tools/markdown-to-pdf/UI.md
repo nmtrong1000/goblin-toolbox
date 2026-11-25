@@ -17,8 +17,8 @@ Mockup (desktop interactive, mobile settings sheet, states): https://claude.ai/a
 Three sections, top to bottom.
 
 1. **Style**: ten preset cards in two columns. A card shows a mini page drawn with the preset's heading, text and link colors, an "Aa" sample in its font, and an underline under the heading bar when the preset underlines headings. A badge shows the active preset's name, or **Custom**.
-2. **Page**: page size cards with a to-scale paper thumbnail (swaps with orientation); orientation and margins as segmented controls with icons; page numbers as a switch.
-3. **Advanced** (collapsed by default, "Fine-tune the style"): font (Sans / Serif), headings (Plain / Underline), theme (Default / Classic), and one color row each for text, heading and link: a swatch button, the hex value, and a popover with the ten presets' colors for that role plus a custom button that opens the native color picker. The hex field accepts `#rrggbb` only.
+2. **Page**: page size cards with a to-scale paper thumbnail (swaps with orientation); orientation and margins as segmented controls with icons; page numbers as a switch. With page numbers on, a Position control (left, center, right) and a Format control (`1 / 7`, `1`) appear, with a note that numbers show in the PDF only (the preview is one continuous page). When custom margins are set, no margin preset is selected; picking one clears them.
+3. **Advanced** (collapsed by default, "Fine-tune the style"): font (Sans / Serif), headings (Plain / Underline), density (Comfortable / Compact, the `theme` option), margins in mm for top, right, bottom and left (0–50), and one color row each for text, heading and link: a swatch button, the hex value, and a popover with the ten presets' colors for that role plus a custom button that opens the native color picker. The hex field accepts `#rrggbb` only.
 
 ### Presets
 

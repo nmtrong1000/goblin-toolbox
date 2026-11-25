@@ -3,6 +3,8 @@
   "nav.label": "Main navigation",
   "nav.home": "Home",
   "nav.vaults": "Vaults",
+  "menu.open": "Open menu",
+  "menu.close": "Close menu",
   "footer.label": "Footer navigation",
   "footer.copyright": "© {{year}} Goblin Toolbox",
   "breadcrumb.label": "Breadcrumb",
