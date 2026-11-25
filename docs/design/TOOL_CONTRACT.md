@@ -43,13 +43,14 @@ What every tool must provide so the Host can show it and Vercel can run it. The 
 
 | Rule | Value |
 |---|---|
-| Runtime | One Express app in one Vercel Function, built with `createApp()` from `@goblin/server-kit`. The service entrypoint is `src/index.ts` (Vercel compiles it; do not ship a prebuilt bundle), and `devCommand` runs `src/dev-server.ts` for `vercel dev` |
+| Runtime | One Express app in one Vercel Function, built with `createApp()` from `@goblin/server-kit`. The service entrypoint is `src/index.ts` (Vercel compiles it; do not ship a prebuilt bundle), and `devCommand` runs `src/devServer.ts` for `vercel dev` |
 | Layers | `routes/` → `services/` → `integrations/`. Routes handle HTTP only: validation, calling a service, mapping results and errors. Services hold the business logic and never import Express. Integrations wrap external systems (Blob, browsers, outbound HTTP). A layer only calls the layer below it. |
 | Paths | `/api/tools/<slug>/…` for the API; `/api/cron/<slug>-<job>` for scheduled jobs |
 | Format | JSON in, JSON out, unless the tool's design says otherwise (e.g. a file download) |
 | Validation | Every request body and query is validated with the tool's Zod schemas before the handler runs |
 | Errors | `{ "code": string, "message": string }`; `code` is stable and listed in `openapi.yaml`; `message` is English |
 | Unknown routes | `404` with `code: "NOT_FOUND"` (server-kit) |
+| Malformed JSON body | `400` with `code: "INVALID_REQUEST"` (server-kit) |
 | Unexpected failures | `500` with `code: "INTERNAL_ERROR"`; details only in logs (server-kit) |
 | Platform answers | `429` from the WAF and `413` above ~4.5 MB come from Vercel without the JSON body; clients must handle them |
 | Cron | Requires `Authorization: Bearer $CRON_SECRET` |
