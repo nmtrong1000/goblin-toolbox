@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import request from 'supertest';
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createApp, requireCronSecret } from '#/index.ts';
 
 const tool = Router();
@@ -40,6 +40,21 @@ describe('service app', () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ value: 1 });
+  });
+
+  it('rejects a malformed JSON body as INVALID_REQUEST without logging the body', async () => {
+    const log = vi.spyOn(process.stderr, 'write').mockReturnValue(true);
+    const response = await request(app)
+      .post('/api/tools/sample/echo')
+      .set('content-type', 'application/json')
+      .send('{secret-text');
+    const logged = log.mock.calls.map(([line]) => String(line)).join('');
+    log.mockRestore();
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ code: 'INVALID_REQUEST', message: 'The request is invalid.' });
+    expect(logged).toContain('entity.parse.failed');
+    expect(logged).not.toContain('secret-text');
   });
 
   it('returns the shared error format for unknown routes', async () => {

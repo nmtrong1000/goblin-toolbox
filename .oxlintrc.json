@@ -31,6 +31,39 @@
       }
     },
     {
+      "files": ["**/*.ts", "**/*.mjs", "**/*.js"],
+      "rules": {
+        "unicorn/filename-case": [
+          "error",
+          {
+            "case": "camelCase"
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/*.tsx"],
+      "rules": {
+        "unicorn/filename-case": [
+          "error",
+          {
+            "case": "pascalCase"
+          }
+        ]
+      }
+    },
+    {
+      "files": ["**/src/main.tsx", "**/src/bootstrap.tsx", "**/src/app/router.tsx"],
+      "rules": {
+        "unicorn/filename-case": [
+          "error",
+          {
+            "case": "camelCase"
+          }
+        ]
+      }
+    },
+    {
       "files": ["host/**"],
       "rules": {
         "no-restricted-imports": [

@@ -38,11 +38,13 @@ host/src/                          tools/<slug>/ui/src/
 
 ## Files and names
 
+File and folder names follow [WORKFLOW.md](../WORKFLOW.md), section "File and folder naming". For UI code:
+
 | Kind | File name | Export |
 |---|---|---|
 | Component or page | `PascalCase.tsx`, same as the component | Named export; a remote's `Tool.tsx` also has the default export the Host loads |
 | Hook | `useCamelCase.ts` | Named export |
-| Other module | `kebab-case.ts` | Named exports |
+| Other module | `camelCase.ts` | Named exports |
 
 - One component per file. No second component in the same file, not even a small private one (lint: `react/no-multi-comp`).
 - Props are typed with a `XxxProps` type in the same file.

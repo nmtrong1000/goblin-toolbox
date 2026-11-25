@@ -1,53 +1,91 @@
 # Deploy runbook
 
-## Preview and production
+How to run, deploy, configure and operate Goblin Toolbox as it is today. It describes the current setup only; what each phase verified in production is recorded in that phase's file in `docs/phases/`.
 
-Push a branch and open a pull request. Vercel should create a preview deployment for the pull request. Review the deployment checks and open the preview URL before merging. Merging to `main` deploys production.
+## Setup
 
-For a manual deployment, link the repository with `vercel link` once, then use `vercel deploy --target preview` for a preview or `vercel deploy --prod` for production.
+- One Vercel project, `goblin-toolbox`, linked to the GitHub repo. Production domain: `https://goblin-toolbox.vercel.app`.
+- [Vercel Services](https://vercel.com/docs/services) (beta): `vercel.json` defines one service for the Host, one static service per tool UI remote and one function per tool API service, plus the public route table. Every service builds separately but ships in the same deployment, so a deployment or rollback always moves all services together.
+- Region `sin1` for every function.
+- Vercel CLI is a pinned dev dependency (`vercel` 66.6.0). Use `pnpm exec vercel …`; link the repo once with `vercel link`.
 
-The active shared firewall rule matches `/api/`, limits requests to 100 per IP per 60 seconds, and returns `429` after the limit. Treat this as a provisional threshold and review it against real traffic before tightening it.
+| Service | Root | Serves |
+|---|---|---|
+| `host` | `host/` | `/`, `/vaults/*`, `/tools/*`, `/catalog.json`, `/contracts/<slug>.html` |
+| `<slug>-ui` | `tools/<slug>/ui/` | `/remotes/<slug>/*` |
+| `<slug>-api` | `tools/<slug>/api/` | `/api/tools/<slug>/*`, `/api/cron/<slug>-*` |
 
-Content-hashed files under `/assets/*` (Host) and `/remotes/<slug>/assets/*` (tool remotes) are served with a one-year immutable cache policy. HTML and `remoteEntry.js` use revalidation so new deployments can reference new asset hashes.
+## Local development
 
-The project uses Vercel Services: `vercel.json` defines one static service for the Host, one static service per tool remote and one function per tool API, and routes paths to them. Every service builds separately but ships in the same deployment.
+```sh
+pnpm install
+pnpm start
+```
+
+`pnpm start` runs `vercel dev --local`: every service in `vercel.json` behind <http://localhost:5173>, with reload on change. No Vercel login or environment variables are needed. The Host's dev command generates `catalog.json` and the contract pages before starting Vite.
+
+- PDF rendering uses the local Google Chrome; set `LOCAL_CHROME_PATH` if it is not in the default location.
+- The API service's dev script sets `LOCAL_PDF_OUTPUT=1`, so **Create PDF** downloads the file directly instead of uploading it to Blob.
+- `pnpm test` runs unit tests; `pnpm test:ui` runs Playwright against the local stack and starts it if it is not running.
+
+## Deploy
+
+| Target | How |
+|---|---|
+| Preview | Push a branch and open a pull request; Vercel builds a preview deployment. Manual: `vercel deploy --target preview` |
+| Production | Merge into `main`; Vercel deploys production from `main`. Manual: `vercel deploy --prod` |
+
+- GitHub Actions (`.github/workflows/ci.yml`) runs lint, format, typecheck, unit tests, Playwright and build on every pull request and push to `main`. Vercel deploys independently of CI, so check that CI is green before merging.
+- Preview deployments are protected. Use `vercel curl <path> --deployment <url>` for authenticated checks, or open them in a browser signed in to Vercel.
+- After a production deployment, check the health of every API service and open the Host.
 
 ## Environment variables
 
-Set production and preview values in the Vercel project settings under **Settings → Environment Variables**. Pull the values needed for local development with:
+Set them in **Vercel → Project → Settings → Environment Variables**, then redeploy so functions receive the new values. Never commit `.env.local` or values copied from Vercel. Pull values for local use with `vercel env pull .env.local`.
 
-```sh
-vercel env pull .env.local
-```
+| Variable | Used by | Environments | Notes |
+|---|---|---|---|
+| `BLOB_STORE_ID` | `markdown-to-pdf-api` | Production, Preview, Development | Vercel Blob store; Vercel injects `VERCEL_OIDC_TOKEN` for access, so no static token is needed on Vercel |
+| `CRON_SECRET` | `markdown-to-pdf-api` | Production | Sensitive; the cron route rejects calls without it |
+| `BLOB_READ_WRITE_TOKEN` | `markdown-to-pdf-api` | Local only, optional | Only to test real Blob uploads locally |
+| `LOCAL_CHROME_PATH` | `markdown-to-pdf-api` | Local only, optional | Chrome executable for local rendering |
 
-Never commit `.env.local` or values copied from Vercel. Redeploy after changing variables so a new function deployment receives them.
+`BLOB_WEBHOOK_PUBLIC_KEY` is added by the Blob integration and is not read by the code. Each tool lists its own variables, function settings and cron jobs in `tools/<slug>/README.md`.
 
-## Logs and health
+## Functions
 
-Use **Vercel → Project → Deployments → deployment → Functions → Logs**, or `vercel logs --deployment <url>`, to inspect function logs. Each API log is JSON and includes the request ID, method, path, status and duration. The matching `x-request-id` response header identifies a request. Do not log request or response bodies.
+- Function settings live on the tool's API service in `vercel.json` (`functions`): Markdown to PDF uses `maxDuration` 60 seconds and bundles its renderer assets with `includeFiles`.
+- On the Hobby plan memory is fixed at 2048 MB and 1 vCPU and cannot be set per service.
+- Each API service answers `GET /api/tools/<slug>/health` with `200` and `{"status":"ok","service":"<slug>"}`.
 
-Check each API service's health after deployment, e.g. `/api/tools/markdown-to-pdf/health`. It should return `200` with `{"status":"ok","service":"<slug>"}` and an `x-request-id` header.
+## Cron jobs
 
-## Production configuration review
+Cron jobs are declared in `vercel.json` (`crons`) by the tool that needs them and run on production only.
 
-Reviewed 2026-11-22:
+| Path | Schedule | Purpose |
+|---|---|---|
+| `/api/cron/markdown-to-pdf-cleanup` | `0 3 * * *` (03:00 UTC) | Delete expired PDFs from Blob |
 
-- Production domain: `https://goblin-toolbox.vercel.app`.
-- Function: 2048 MB memory, 60-second maximum duration, region `sin1`.
-- Cleanup cron: `/api/cron/markdown-to-pdf-cleanup`, daily at 03:00 UTC.
-- Blob: production has `BLOB_STORE_ID`; Vercel injects `VERCEL_OIDC_TOKEN` for the Blob SDK. No static read-write token is required on Vercel.
-- Cleanup authentication: `CRON_SECRET` is configured as a sensitive production environment variable. Redeploy after changing it.
-- Locale: browser language when supported, with English fallback.
-- WAF: active rule `API rate limit`, path prefix `/api/`, 100 requests per IP per 60 seconds.
+- List: `vercel crons ls`.
+- Run now: `vercel crons run /api/cron/markdown-to-pdf-cleanup`, or **Run** in **Vercel → Project → Settings → Cron Jobs**.
+- Vercel sends `Authorization: Bearer $CRON_SECRET`; without it the route returns `401`.
 
-## Phase 4 verification record
+## Caching and firewall
 
-- Commit `dbe7834` passed GitHub CI and deployed successfully to production at `https://goblin-toolbox-4x3dv8sso-john-does-projects-37100f9f.vercel.app`; `https://goblin-toolbox.vercel.app` now serves that deployment.
-- Rollback drill on 2026-11-22: rolled the production alias back to the previous ready deployment, confirmed the alias target, then promoted the current deployment and confirmed `https://goblin-toolbox.vercel.app` points to it.
-- The initial production smoke check returned a non-JSON server error on `/api/health`. Vercel function logs identified missing runtime packages, then CommonJS loading of ESM-only Chromium and Puppeteer modules. The fix declares those packages as backend runtime dependencies and loads Chromium/Puppeteer with dynamic imports.
-- Production smoke checks through authenticated `vercel curl` returned `200` and `{"status":"ok"}` for health, `200` for PDF creation with an `expiresAt` URL, and `400` for invalid input. The returned Blob downloaded as a valid one-page PDF 1.4 file (`%PDF-` signature). Direct requests from this environment could not resolve `goblin-toolbox.vercel.app` (`ENOTFOUND`), so the production UI flow still needs browser review. Protected preview URLs may return the Vercel Authentication page or `401` to unauthenticated requests; use `vercel curl` for authenticated smoke checks.
-- Vercel usage review is pending. `vercel usage --format=json` returned `Costs not found (404)` for this account, so current-period usage could not be assessed from the CLI.
+- Hashed files under `/assets/*` (Host) and `/remotes/<slug>/assets/*` (remotes) are cached for one year as immutable. HTML and `remoteEntry.js` revalidate, so a new deployment is picked up at once.
+- WAF rule `API rate limit`: path prefix `/api/`, 100 requests per IP per 60 seconds, then `429`. Review it against real traffic before tightening.
 
-## Instant Rollback
+## Logs
 
-In **Vercel → Project → Deployments**, open the last known-good deployment and select **Promote to Production** (or **Instant Rollback** when shown). Confirm the production domain points to that deployment, then use the latest successful deployment's **Promote to Production** action to restore the current version. Keep both deployments available until the restored version is verified.
+- **Vercel → Project → Logs**, or `vercel logs --deployment <url>`. Filter by service, e.g. `markdown-to-pdf-api`.
+- Every API log line is JSON with the request ID, method, path, status and duration; the `x-request-id` response header gives the ID of a request. Request and response bodies are never logged.
+
+## Rollback
+
+All services roll back together.
+
+1. **Vercel → Project → Deployments**, open the last known-good production deployment and select **Promote to Production** (or **Instant Rollback**). CLI: `vercel promote <deployment-url> --yes`.
+2. Check that `https://goblin-toolbox.vercel.app` serves that deployment (`vercel inspect goblin-toolbox.vercel.app`) and that every health endpoint returns `200`.
+3. When the fix is ready, merge it into `main`, or promote the newer deployment again the same way.
+
+After a manual promotion Vercel may stop assigning the production domain to new deployments from `main`; if a later merge does not reach the domain, promote that deployment once.

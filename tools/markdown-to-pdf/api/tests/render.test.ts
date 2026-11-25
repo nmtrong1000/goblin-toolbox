@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { renderPdf } from '#/integrations/pdf-renderer.ts';
+import { renderPdf } from '#/integrations/pdfRenderer.ts';
 import { defaultOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
 
 const pixel =

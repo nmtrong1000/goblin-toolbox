@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { formatMarkdown } from '#/lib/format-markdown.ts';
+import { formatMarkdown } from '#/lib/formatMarkdown.ts';
 
 const initialMarkdown = '# Welcome\n\nWrite Markdown here to see a preview.';
 

@@ -10,6 +10,7 @@
 | Architecture | [docs/design/HLD.html](./docs/design/HLD.html), [docs/design/PROJECT_STRUCTURE.md](./docs/design/PROJECT_STRUCTURE.md), `docs/design/decisions/` |
 | What a tool must provide | [docs/design/TOOL_CONTRACT.md](./docs/design/TOOL_CONTRACT.md) |
 | How UI code is split into components | [docs/design/UI_CONVENTIONS.md](./docs/design/UI_CONVENTIONS.md) |
+| Deploy, environment, cron, logs, rollback | [docs/DEPLOY_RUNBOOK.md](./docs/DEPLOY_RUNBOOK.md) |
 | What REVIEW checks | [docs/REVIEW_CHECKLIST.md](./docs/REVIEW_CHECKLIST.md) |
 
 The rules below only cover how an agent works inside that process.

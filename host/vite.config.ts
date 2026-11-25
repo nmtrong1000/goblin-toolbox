@@ -1,3 +1,7 @@
+/*
+ * optimizeDeps.entries is limited to index.html: Vite otherwise scans every .html file, including
+ * the generated public/contracts/*.html pages, whose inlined Redoc bundle esbuild cannot parse.
+ */
 import { federation } from '@module-federation/vite';
 import { sharedSingletons } from '@goblin/ui-kit/federation';
 import react from '@vitejs/plugin-react';
@@ -8,5 +12,6 @@ export default defineConfig({
     react(),
     federation({ name: 'host', remotes: {}, shared: sharedSingletons, dts: false }),
   ],
+  optimizeDeps: { entries: ['index.html'] },
   build: { target: 'esnext' },
 });

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
 import { PdfRequestError, requestPdf } from '#/api/pdf.ts';
-import { saveFile } from '#/lib/save-file.ts';
+import { saveFile } from '#/lib/saveFile.ts';
 
 export function useCreatePdf() {
   const [busy, setBusy] = useState(false);

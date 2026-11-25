@@ -6,7 +6,7 @@ import { promisify } from 'node:util';
 import pixelmatch from 'pixelmatch';
 import { PNG } from 'pngjs';
 import { describe, expect, it } from 'vitest';
-import { renderPdf, renderPreviewScreenshot } from '#/integrations/pdf-renderer.ts';
+import { renderPdf, renderPreviewScreenshot } from '#/integrations/pdfRenderer.ts';
 import { defaultOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
 
 const run = promisify(execFile);

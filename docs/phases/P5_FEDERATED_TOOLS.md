@@ -12,14 +12,14 @@
 | F1 | Workspace and catalog | Update `pnpm-workspace.yaml` for `host`, `packages/*` and the tool packages chosen in F0. Pin shared singletons (`react`, `react-dom`, `react-router`, `i18next`, `react-i18next`) with a pnpm `catalog:` so the Host and every remote use one version. Pin the Vercel CLI as a root dev dependency. Let the oxlint cross-tool rule allow a tool's own `@goblin/tool-<slug>-*` packages. | F0 | [x] |
 | F2 | `@goblin/server-kit` | Move request id, JSON body limit, request log, 404, error handler and the cron bearer check from `backend/` into `packages/server-kit` behind `createApp({ routers })`, which also adds `/api/tools/<slug>/health` to every API service; `/api/health` is removed. Move the health and error-format tests with it. | F1 | [x] |
 | F3 | `@goblin/ui-kit` | Move design tokens and components shared with tools from `frontend/` into `packages/ui-kit`. Shell-only components stay in the Host. | F1 | [x] |
-| F4 | Host | Rename `frontend/` to `host/`. Add the Remote Loader (load by slug, mount `./Tool`, error state when a remote fails), the catalog loader, `catalog.config.json` and the `build-catalog` script. Remove `registry.ts` and every static import of tool code. Tool names come from manifests, not shell i18n. | F1, F3 | [x] |
+| F4 | Host | Rename `frontend/` to `host/`. Add the Remote Loader (load by slug, mount `./Tool`, error state when a remote fails), the catalog loader, `catalog.config.json` and the `buildCatalog.mjs` script. Remove `registry.ts` and every static import of tool code. Tool names come from manifests, not shell i18n. | F1, F3 | [x] |
 | F5 | Markdown to PDF split | Restructure `tools/markdown-to-pdf/` into `manifest.json`, `shared/`, `ui/` (MF remote exposing `./Tool`, i18n namespace `markdown-to-pdf`), `api/` (`routes/`, `services/`, `integrations/` on `server-kit`) and `renderer/`. Behavior, options, limits and error codes stay the same. | F2, F3 | [x] |
 | F6 | Vercel Services config | Rewrite `vercel.json`: one service per Host, remote and API; the public route table; function settings, `includeFiles` and region on the Markdown to PDF API service; each service that needs a cron registers its own Vercel Cron Job; cache headers (`remoteEntry.js` short, hashed chunks immutable). Remove `api/` and `backend/`. | F4, F5 | [x] |
 | F7 | Local dev and tests | `pnpm start` runs the Host, remote and API together with `vercel dev`. Update Playwright `webServer` so UI tests run the full stack. Every existing test passes in its new place. | F6 | [x] |
 | F8 | CI | Lint, format, type check and tests across the new packages; build every service; run UI tests on the full stack. | F7 | [x] |
 | F9 | Tool scaffold | `pnpm new-tool <slug>` creates a tool that meets the contract: manifest, `shared/`, `ui/`, `api/`, i18n with a parity test, README and `openapi.yaml` stubs, and prints the `vercel.json` and vault-config entries to add. Verified by generating a fake tool, building and testing it, then deleting it. | F6 | [x] |
 | F10 | Harness and docs | Update `WORKFLOW.md` (package names in import and lint rules, HUMAN REVIEW package list), the lint hook if needed, `README.md` (setup, dev), `TECH_STACK.md` (MF plugin, Services), `DEPLOY_RUNBOOK.md`, the tool README (function settings), and `HLD.html`, `PROJECT_STRUCTURE.md` and `TOOL_CONTRACT.md` where F0 changed the design. | F8, F9 | [x] |
-| F11 | Deploy | Preview deployment first, full test list on it; production after HUMAN REVIEW; rollback drill. | F10 | [ ] |
+| F11 | Deploy | Preview deployment first, full test list on it; production after HUMAN REVIEW; rollback drill. | F10 | [x] |
 
 ## Patterns to keep
 
@@ -61,6 +61,14 @@
 
 - The migrated toolbox in production, the F0 spike record, updated docs and harness.
 
+## Verification
+
+- Merge `83f4a2e` deployed to production at `https://goblin-toolbox-5ikep8wld-john-does-projects-37100f9f.vercel.app`; `https://goblin-toolbox.vercel.app` serves it. The Markdown to PDF API function is 74 MB in `sin1`.
+- Production smoke checks on 2026-11-25: `/`, `/vaults/document-tools`, `/tools/markdown-to-pdf`, `/catalog.json`, `/contracts/markdown-to-pdf.html` and `/remotes/markdown-to-pdf/remoteEntry.js` return `200`; `/api/tools/markdown-to-pdf/health` returns `200`, an unknown tool path `404` JSON, the cleanup cron without a secret `401`, and the removed `/api/health` `404`. A PDF request with Vietnamese text, a formula and a Mermaid diagram returned `200` with a Blob URL; the file is a valid one-page PDF 1.4 with all three rendered. Invalid input returns `400 INVALID_REQUEST`. `remoteEntry.js` is served with `max-age=0, must-revalidate`, hashed Host assets with `max-age=31536000, immutable`.
+- Cron: `vercel crons ls` lists `/api/cron/markdown-to-pdf-cleanup` at `0 3 * * *`; `vercel crons run` invoked it and the function returned `200`.
+- Rollback drill on 2026-11-25: `vercel promote` of the Phase 4 deployment `4x3dv8sso` moved the production alias to it (`/api/health` answered again), then `vercel promote` of `5ikep8wld` restored Phase 5; each step took under 3 seconds.
+- The first GitHub CI run on the new layout failed in `pnpm test:ui`: under `vercel dev` the Host service ran plain `vite`, so `catalog.json` was never generated on a fresh checkout. The Host service now has `devCommand: pnpm dev --port $PORT`, and Vite's dependency scan is limited to `index.html` so the generated contract pages are not parsed.
+
 ## Risks
 
 | Risk | Likelihood | Mitigation |
@@ -96,6 +104,9 @@
 | i18n namespace `markdownToPdf` → `markdown-to-pdf` | TOOL_CONTRACT: the namespace is the slug. |
 | `@goblin/ui-kit` holds tokens and federation settings only; it is not a federation singleton | No React component is shared with tools yet. |
 | `/api/health` removed; each API service has `/api/tools/<slug>/health` | Decision above; there is no shared backend. |
+| Host service has `devCommand: pnpm dev --port $PORT`; Vite's dependency scan is limited to `index.html` | Found by the first CI run: `vercel dev` ran plain `vite` for the Host, so `catalog.json` was missing on a fresh checkout; the generated contract pages also broke the dependency scan. |
+| A malformed JSON body returns `400 INVALID_REQUEST` instead of `500`, and body parser errors are logged by type only | Found in the production smoke checks; the handler came unchanged from Phase 4 and its error message quoted part of the request body. |
+| File naming: TypeScript, JavaScript and CSS files are camelCase, components PascalCase, Markdown UPPERCASE_UNDERSCORE, other HTML and folders hyphen-case (WORKFLOW.md); 15 files renamed; oxlint `unicorn/filename-case` enforces the code rules | Requested at HUMAN REVIEW. |
 | Added `pnpm generate-contracts`: Redocly renders each tool's `openapi.yaml` to `host/public/contracts/<slug>.html` (gitignored), run by the Host's dev and build scripts, so every deployment serves `/contracts/<slug>.html` | Requested at HUMAN REVIEW: read the API contracts on the web. |
 | Added [UI_CONVENTIONS.md](../design/UI_CONVENTIONS.md) and split the Host router and the Markdown to PDF `Tool.tsx` (390 lines) into pages, components, hooks, `api/` and `lib/`; oxlint now runs the React plugin with `react/no-multi-comp` and `max-lines` | Requested at HUMAN REVIEW: the old split mixed several components, fetching and layout logic in one file. |
 

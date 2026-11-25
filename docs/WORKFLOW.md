@@ -82,10 +82,25 @@ The agent presents all of the following in one message:
 - Never commit secret files: tokens, keys, `.env`. The PreToolUse hook `.claude/hooks/block_secrets.py` blocks any `git add` or `git commit` that would stage one, by file name or by secret-looking content.
 - Requirement and phase plan changes are committed together with the change that caused them; [README.md](../README.md), [docs/design/NFR.md](./design/NFR.md), `tools/<slug>/README.md` and `docs/phases/` always match the code on `main`.
 
-## Markdown file naming
+## File and folder naming
 
-- Name Markdown files with `UPPERCASE_UNDERSCORE` (for example, [PROJECT_STRUCTURE.md](./design/PROJECT_STRUCTURE.md) or [P1_DESIGN.md](./phases/P1_DESIGN.md)).
-- Keep conventional entry point names such as [README.md](../README.md) as [README.md](../README.md).
+| What | Case | Example |
+| :---- | :---- | :---- |
+| TypeScript, JavaScript and CSS files | camelCase | `blobStorage.ts`, `buildCatalog.mjs`, `tokens.css` |
+| React component files | PascalCase, same as the component | `MobileViewSwitch.tsx` |
+| Other `.tsx` files (entry, route table) | camelCase | `main.tsx`, `router.tsx` |
+| Markdown files | UPPERCASE_UNDERSCORE | `0001_NODE_EXPRESS_BACKEND.md`, `P1_DESIGN.md` |
+| Documents in `docs/` in another format | UPPERCASE_UNDERSCORE | `HLD.html` |
+| Other HTML files and any file served at a URL (images, fonts) | hyphen-case | `markdown-to-pdf.html` |
+| JSON and YAML files we name | camelCase | `manifest.json`, `openapi.yaml` |
+| Python files | snake_case (PEP 8) | `block_secrets.py` |
+| Folders | hyphen-case | `ui-kit`, `markdown-to-pdf` |
+
+- The case applies to the name before the last dot-separated suffixes: `searchTools.test.ts`, `tool.e2e.ts`, `types.d.ts`, `catalog.config.json`.
+- Acronyms are written as words: `pdfRenderer.ts`, `requestId.ts`, `usePreviewHtml.ts`, not `PDFRenderer.ts`.
+- Names fixed by a tool or a convention stay as they are: `package.json`, `tsconfig.json`, `vite.config.ts`, `playwright.config.ts`, `pnpm-workspace.yaml`, `pnpm-lock.yaml`, `vercel.json`, `.oxlintrc.json`, `.github/workflows/*.yml`, `index.html`, `README.md`, `AGENTS.md`, `CLAUDE.md`.
+- Names that are not files keep their own rules: package names, tool slugs, URL paths, pnpm script names and CSS classes are hyphen-case (`@goblin/ui-kit`, `pnpm new-tool`, `mdpdf-toolbar`).
+- oxlint (`unicorn/filename-case`) enforces the TypeScript, JavaScript and component rules; the rest is checked in REVIEW.
 
 ## Comment and language rules
 
@@ -120,6 +135,11 @@ The agent presents all of the following in one message:
 
 - Every package keeps its tests in one `tests/` folder next to `src/`; no other test folders.
 - `*.test.ts` files run with Vitest (`pnpm test`); `*.e2e.ts` files run with Playwright on the full stack (`pnpm test:ui`).
+
+## Deployment docs
+
+- [docs/DEPLOY_RUNBOOK.md](./DEPLOY_RUNBOOK.md) is the DevOps guide for the project as it is now: local stack, deploy, environment variables, functions, cron jobs, caching, firewall, logs and rollback. It holds no history; update it in the same change that alters any of these.
+- What a phase checked in production (deployment URLs, smoke checks, cron, rollback drill, findings) is recorded in that phase's file in `docs/phases/`, under `## Verification`. Production checks run after the push, so their record goes in a follow-up docs commit that needs its own approval.
 
 ## Lint and format
 

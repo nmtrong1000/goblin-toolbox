@@ -20,6 +20,8 @@ The MVP has one tool: **Markdown to PDF**.
 | How each phase runs | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
 | Toolbox design | [docs/design/HLD.html](docs/design/HLD.html), [docs/design/PROJECT_STRUCTURE.md](docs/design/PROJECT_STRUCTURE.md) |
 | What a tool must provide | [docs/design/TOOL_CONTRACT.md](docs/design/TOOL_CONTRACT.md) |
+| How UI code is split | [docs/design/UI_CONVENTIONS.md](docs/design/UI_CONVENTIONS.md) |
+| Deploy, environment, cron, logs, rollback | [docs/DEPLOY_RUNBOOK.md](docs/DEPLOY_RUNBOOK.md) |
 | Shared visual design system | [docs/design/DESIGN.md](docs/design/DESIGN.md) |
 | Tool requirements | `tools/<slug>/README.md`, e.g. [Markdown to PDF](tools/markdown-to-pdf/README.md) |
 | Tool documents | `tools/<slug>/docs/`, e.g. `tools/markdown-to-pdf/docs/` |
