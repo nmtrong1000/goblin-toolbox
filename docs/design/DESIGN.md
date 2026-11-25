@@ -72,10 +72,25 @@ rounded:
   sm: 2px
   md: 4px
   full: 999px
+shadows:
+  print-sm: "3px 3px 0 {colors.rule}"
+  print-md: "3px 3px 0 {colors.ink}"
+  print-lg: "7px 7px 0 {colors.ink}"
+  print-accent: "3px 3px 0 {colors.accent}"
 motion:
   state-change:
     duration: 160ms
     timingFunction: ease-out
+  lift:
+    duration: 220ms
+    timingFunction: cubic-bezier(0.2, 0.8, 0.2, 1)
+  enter:
+    duration: 560ms
+    timingFunction: cubic-bezier(0.2, 0.8, 0.2, 1)
+    stagger: 60ms
+  page:
+    duration: 280ms
+    timingFunction: cubic-bezier(0.2, 0.8, 0.2, 1)
 components:
   button-primary:
     backgroundColor: "{colors.ink}"
@@ -96,14 +111,39 @@ components:
     backgroundColor: "{colors.paper-raised}"
     textColor: "{colors.ink}"
     typography: "{typography.body}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.md}"
     height: 64px
+    shadow: "{shadows.print-sm}"
+  input-default-focus:
+    shadow: "5px 5px 0 {colors.ink}"
   card-tool:
-    backgroundColor: "{colors.paper}"
+    backgroundColor: "{colors.paper-raised}"
     textColor: "{colors.ink}"
     typography: "{typography.body}"
-    rounded: "{rounded.none}"
+    rounded: "{rounded.md}"
     padding: 28px
+    border: "1px solid {colors.ink}"
+    shadow: "{shadows.print-sm}"
+  card-tool-hover:
+    transform: "translate(-3px, -3px)"
+    shadow: "{shadows.print-lg}"
+  icon-tile:
+    backgroundColor: "{colors.accent-pale}"
+    textColor: "{colors.accent-dark}"
+    rounded: "{rounded.md}"
+    size: 56px
+    border: "1px solid {colors.ink}"
+  chip:
+    textColor: "{colors.olive}"
+    typography: "{typography.metadata}"
+    rounded: "{rounded.full}"
+    border: "1px solid {colors.olive}"
+  segmented-toggle:
+    backgroundColor: "{colors.paper-raised}"
+    selectedBackgroundColor: "{colors.ink}"
+    selectedTextColor: "{colors.paper}"
+    typography: "{typography.label}"
+    rounded: "{rounded.md}"
 ---
 
 # Goblin Toolbox Design System
@@ -160,23 +200,41 @@ Use the 4 px base scale. Keep spacing generous around lead content and between m
 - Use 40–64 px between major page sections and around the page introduction.
 - On small screens, reduce outer margins and section gaps while retaining comfortable text line height and control padding.
 
-## Rounded
+## Rounded and shadows
 
-Use square corners by default. The system should feel printed and composed, not like a generic pill-based dashboard. Use the `sm` radius only for a small focus detail when a perfectly square edge harms clarity. Reserve `full` for circular indicators or avatars, never for primary buttons or cards.
+Corners stay nearly square so the system feels printed, not like a pill-based dashboard. Use `md` (4 px) for cards, inputs, icon tiles and toggles, `sm` inside small controls, and `none` for rules and full-width bands. Reserve `full` for chips, circular badges and indicators, never for primary buttons or cards.
+
+Depth comes from print-style offset shadows: a solid block offset down and right, with no blur, like a second plate printed slightly off register. `print-sm` (in `rule`) marks a raised surface at rest; `print-md` and `print-accent` mark a brand mark or a pressed-looking primary action; `print-lg` (in `ink`) is the hover or focus state of a card or the search field. Never use blurred drop shadows.
 
 ## Motion
 
-Motion should be quiet and functional. Use the `state-change` timing for hover, focus, and selected-state transitions. Prefer color and underline changes over movement. Avoid parallax, spring effects, and decorative entrance animations.
+Motion is lively but short, and always tells the reader something: where they are going, what can be clicked, what just changed.
+
+- `state-change`: color, border and underline changes on hover, focus and selection.
+- `lift`: hover on cards and buttons. A card moves up-left by 3 px while its shadow grows from `print-sm` to `print-lg`; its icon tilts slightly and its arrow slides right. A pressed button moves into its shadow.
+- `enter`: content rises 14 px and fades in when a page opens. Items in a list or grid start one `stagger` after another, at most 6 steps.
+- `page`: route changes use the View Transitions API, a short cross-fade with a small rise. Browsers without it change page with no animation.
+- Hero decoration: the light halftone stays still; a spot of `ink` dots, about 180 px across, trails the mouse with a soft ease and fades out when the pointer leaves the hero (nothing on touch screens). The stamp turns once every 40 s for 10 turns, then rests.
+- Animate only `transform` and `opacity` (and `background-position` for the halftone). No scroll-jacking or bouncing.
+- Under `prefers-reduced-motion: reduce` only the page slide is removed (pages cross-fade instead). Entrance, hover, the typing hint, the dot spotlight and the stamp's 10 turns stay on: a product decision, see Phase 6.
 
 ## Components
 
 - **Primary button:** Ink background, paper text, square corners, compact uppercase label. Hover to `accent-dark`. Phrase the label as an action, such as “Tìm kiếm” or “Mở công cụ”.
 - **Secondary button:** Raised paper background with ink text and a clear border. Keep it visually quieter than the primary action.
 - **Text input:** Raised paper surface, thin rule border, generous horizontal padding, and a visible focus treatment using ink or accent. Keep labels and helper text outside the field so they remain readable.
-- **Tool card:** Use a fine top or side rule to define the card. The featured tool may use `paper-raised`; standard cards stay on the page background. Avoid heavy shadows. Place category/folio metadata first, then icon, title, short description, and one clear action.
-- **Navigation:** Use a simple horizontal row with uppercase labels and generous gaps. Mark the current destination with the accent color and a second cue such as an underline or weight change.
-- **Dividers:** Prefer 1 px rules in `rule` or `rule-light`. Use a double rule for mastheads or major editorial boundaries only.
-- **Search:** Make search a prominent, full-width editorial control. Keep the input visually dominant and the submit action easy to distinguish.
+- **Tool card:** `paper-raised` surface, 1 px ink border, `md` corners and a `print-sm` shadow that grows to `print-lg` on hover. Top row: the tool's icon tile on the left and its vault chip on the right; then the title, a short description, and an "Open tool" action with an arrow at the bottom. The whole card is one link. Cards sit in a 3-column grid on desktop and one column on phones.
+- **Icon tile:** the tool's icon in `accent-dark` on an `accent-pale` square with an ink border. Tool icons come from the tool's manifest and are painted in `currentColor` through a CSS mask; Host icons are line icons (Lucide, 2 px stroke) in `currentColor`.
+- **Chip:** small uppercase metadata in `olive` with a thin `olive` border and `full` corners; used for vault names.
+- **Navigation:** a horizontal row of uppercase labels, each with a 16 px icon before it. Mark the current destination with the accent color and a 2 px underline. On phones the nav moves to its own row under the brand.
+- **Masthead:** sticky, translucent paper with a background blur, ending in the double rule. Brand mark (an ink square with an accent `print-accent` shadow) and wordmark on the left, nav and language toggle on the right.
+- **Language toggle:** a segmented control with `EN` and `VI`; the selected segment is ink with paper text. Each segment is a button with `aria-pressed`.
+- **Breadcrumb:** Home › vault › tool in `body-sm`, chevron separators in `rule`, the current page in `ink`.
+- **Skeleton:** blocks in `paper-deep` with a slow shimmer, shaped like the content that is loading; the region has `role="status"` and a text label.
+- **Dividers:** Prefer 1 px rules in `rule` or `rule-light`. Use a double rule for mastheads, footers and major editorial boundaries only.
+- **Search:** a prominent, full-width field with a search icon on the left and a clear button on the right once there is text. Results filter as the user types; there is no submit button. On focus the field takes the `print-lg`-style ink shadow. While the field is empty, an animated placeholder types a search hint letter by letter after a blinking accent caret, holds it, deletes it and moves to the next hint (type about 95 ms per letter, hold 1.6 s, delete about 45 ms per letter). After two rounds it rests on the last hint and the caret goes away; focusing the field stops it at once. The hints come from the Host's i18n strings. The animated text is decoration (`aria-hidden`); the field's visible label names it.
+- **Footer:** the double rule, then a row with the wordmark and nav links, then a centered copyright line (`© <current year> Goblin Toolbox`) under a light rule at the very bottom.
+- **Hero decoration:** a halftone dot pattern in a slightly darker paper tone, fading in from one side, with a spot of ink dots under the mouse; and a round stamp with the brand line set on a circle. Both are decorative (`aria-hidden`).
 
 Interactive controls need clear hover, keyboard focus, disabled, and active states. Focus must remain visible against both paper and raised-paper surfaces. Do not communicate state through color alone.
 

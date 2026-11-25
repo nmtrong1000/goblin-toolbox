@@ -26,9 +26,10 @@ host/src/                          tools/<slug>/ui/src/
 │   └── AppLayout.tsx              ├── components/
 ├── pages/                         ├── hooks/
 ├── components/                    ├── api/
-├── catalog/      # feature        ├── lib/
-├── federation/   # feature        ├── i18n/             # en.ts, vi.ts
-├── i18n/                          └── styles/
+├── hooks/                         ├── lib/
+├── catalog/      # feature        ├── i18n/             # en.ts, vi.ts
+├── federation/   # feature        └── styles/
+├── i18n/
 └── styles/
 ```
 
