@@ -165,16 +165,29 @@ components:
         margin:
           type: string
           enum: [narrow, normal, wide]
-          description: "narrow = 10 mm, normal = 20 mm, wide = 25 mm on every side."
+          description: "narrow = 10 mm, normal = 20 mm, wide = 25 mm on every side. Ignored when customMargins is set."
+        customMargins:
+          $ref: "#/components/schemas/Margins"
         pageNumbers:
           type: boolean
-          description: Shows "n / total" centered in the footer.
+          description: Shows the page number in the footer.
+        pageNumberPosition:
+          type: string
+          enum: [left, center, right]
+          default: center
+          description: Where the page number sits in the footer, inside the left and right margins.
+        pageNumberFormat:
+          type: string
+          enum: [current-total, current]
+          default: current-total
+          description: "current-total prints \"n / total\"; current prints \"n\"."
         font:
           type: string
           enum: [noto-sans, noto-serif]
         theme:
           type: string
           enum: [default, classic]
+          description: "Text density. default = Comfortable (12 pt, line height 1.7); classic = Compact (10.5 pt, line height 1.4, tighter spacing)."
         colors:
           $ref: "#/components/schemas/Colors"
         headingStyle:
@@ -195,6 +208,24 @@ components:
     HexColor:
       type: string
       pattern: "^#[0-9a-fA-F]{6}$"
+    Margins:
+      type: object
+      additionalProperties: false
+      required: [top, right, bottom, left]
+      description: Page margins in millimetres. Page numbers need a bottom margin of about 10 mm to show.
+      properties:
+        top:
+          $ref: "#/components/schemas/MarginMm"
+        right:
+          $ref: "#/components/schemas/MarginMm"
+        bottom:
+          $ref: "#/components/schemas/MarginMm"
+        left:
+          $ref: "#/components/schemas/MarginMm"
+    MarginMm:
+      type: number
+      minimum: 0
+      maximum: 50
     CreatePdfResponse:
       type: object
       required: [url, expiresAt]
