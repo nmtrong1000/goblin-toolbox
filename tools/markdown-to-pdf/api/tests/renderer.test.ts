@@ -15,6 +15,23 @@ describe('Markdown to PDF shared renderer', () => {
     expect(html).toContain('class="mdpdf-mermaid"');
   });
 
+  it('renders simple frontmatter as a table and keeps the body', () => {
+    const html = renderMarkdown('---\nid: mkp\ntitle: "Thai <b>market</b>"\n---\n\n# Body');
+
+    expect(html).toContain('<table class="mdpdf-frontmatter">');
+    expect(html).toContain('<tr><th>id</th><td>mkp</td></tr>');
+    expect(html).toContain('<td>Thai &lt;b&gt;market&lt;/b&gt;</td>');
+    expect(html).toContain('<h1>Body</h1>');
+    expect(html).not.toContain('<h2>');
+  });
+
+  it('shows nested frontmatter as raw text and leaves a lone rule alone', () => {
+    expect(renderMarkdown('---\ntags:\n  - a\n---\nText')).toContain(
+      '<pre class="mdpdf-frontmatter-raw"><code>tags:\n  - a</code></pre>',
+    );
+    expect(renderMarkdown('---\n\nText')).toContain('<hr>');
+  });
+
   it('escapes raw HTML and replaces remote images with placeholders', () => {
     const html = renderMarkdown(
       '<script>alert(1)</script>\n\n![private](http://127.0.0.1/secret.png)',
