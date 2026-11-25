@@ -9,6 +9,7 @@ export type CatalogTool = {
   description: Localized;
   keywords: string[];
   remote: string;
+  icon?: string;
 };
 
 export type Catalog = { vaults: CatalogVault[]; tools: CatalogTool[] };

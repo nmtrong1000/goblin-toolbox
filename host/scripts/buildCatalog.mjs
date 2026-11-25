@@ -6,6 +6,7 @@
  */
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
+import { manifestIconError } from '#/catalog/manifestRules.ts';
 
 const hostDir = path.resolve(import.meta.dirname, '..');
 const toolsDir = path.resolve(hostDir, '../tools');
@@ -19,6 +20,8 @@ for (const entry of await readdir(toolsDir, { withFileTypes: true })) {
   if (manifest.slug !== entry.name) {
     throw new Error(`${file}: slug "${manifest.slug}" does not match folder "${entry.name}"`);
   }
+  const iconError = manifestIconError(manifest);
+  if (iconError) throw new Error(`${file}: ${iconError}`);
   manifests.set(manifest.slug, manifest);
 }
 
