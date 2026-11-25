@@ -418,6 +418,9 @@ importers:
       '@codemirror/lang-markdown':
         specifier: ^6.5.2
         version: 6.5.2
+      '@codemirror/language':
+        specifier: ^6.13.1
+        version: 6.13.1
       '@codemirror/state':
         specifier: ^6.7.6
         version: 6.7.6
@@ -427,12 +430,18 @@ importers:
       '@goblin/tool-markdown-to-pdf-shared':
         specifier: workspace:*
         version: link:../shared
+      '@lezer/highlight':
+        specifier: ^1.2.5
+        version: 1.2.5
       codemirror:
         specifier: ^6.0.2
         version: 6.0.2
       i18next:
         specifier: 'catalog:'
         version: 25.10.10(typescript@5.9.3)
+      lucide-react:
+        specifier: ^1.78.0
+        version: 1.78.0(@types/react@19.3.0)(react@19.3.1)
       prettier:
         specifier: ^3.5.3
         version: 3.10.1

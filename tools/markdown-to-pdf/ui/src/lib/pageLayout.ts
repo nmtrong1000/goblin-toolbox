@@ -32,5 +32,6 @@ export function previewCss(options: PdfOptions, layout: PageLayout) {
     options.headingStyle === 'underline'
       ? '.mdpdf-preview h1,.mdpdf-preview h2{border-bottom:1px solid currentColor;padding-bottom:.25em}'
       : '';
-  return `.mdpdf-preview{box-sizing:border-box;width:${layout.width}px;min-height:${layout.height}px;margin:0;padding:${layout.margin}px;background:var(--color-paper-raised);color:${options.colors.text};font-family:${font};line-height:${lineHeight}}.mdpdf-preview h1,.mdpdf-preview h2,.mdpdf-preview h3{color:${options.colors.heading}}.mdpdf-preview a{color:${options.colors.link}}${underline}`;
+  const heading = options.colors.heading;
+  return `.mdpdf-preview{box-sizing:border-box;width:${layout.width}px;min-height:${layout.height}px;margin:0;padding:${layout.margin}px;background:var(--color-paper-raised);color:${options.colors.text};font-family:${font};line-height:${lineHeight}}.mdpdf-preview h1,.mdpdf-preview h2,.mdpdf-preview h3{color:${heading}}.mdpdf-preview a{color:${options.colors.link}}.mdpdf-preview .mdpdf-frontmatter th{color:${heading};background:color-mix(in srgb,${heading} 12%,#fff)}${underline}`;
 }

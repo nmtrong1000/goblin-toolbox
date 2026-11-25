@@ -1,23 +1,21 @@
 /*
- * html and css are not read here; they are the inputs that change the element's height, so a
- * change in either one measures again after the browser lays it out.
+ * Mermaid diagrams, images, math and web fonts change the page height after the HTML is set, so the
+ * height follows the element with a ResizeObserver instead of measuring once per render.
  */
-import { type RefObject, useEffect, useState } from 'react';
+import { type RefObject, useLayoutEffect, useState } from 'react';
 
-export function useContentHeight(
-  element: RefObject<HTMLElement | null>,
-  minHeight: number,
-  html: string,
-  css: string,
-) {
+export function useContentHeight(element: RefObject<HTMLElement | null>, minHeight: number) {
   const [height, setHeight] = useState(0);
 
-  useEffect(() => {
-    const frame = requestAnimationFrame(() => {
-      setHeight(element.current?.scrollHeight ?? minHeight);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [element, minHeight, html, css]);
+  useLayoutEffect(() => {
+    const target = element.current;
+    if (!target) return;
+    const update = () => setHeight(target.scrollHeight);
+    const observer = new ResizeObserver(update);
+    observer.observe(target);
+    update();
+    return () => observer.disconnect();
+  }, [element]);
 
   return Math.max(minHeight, height);
 }

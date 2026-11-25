@@ -1,0 +1,123 @@
+.mdpdf-workspace {
+  position: relative;
+  height: clamp(560px, 78vh, 960px);
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 20px;
+}
+
+.mdpdf-pane {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+}
+
+.mdpdf-pane-header {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--color-rule-light);
+  background: var(--color-paper);
+}
+
+.mdpdf-pane-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: var(--weight-bold);
+}
+
+.mdpdf-count {
+  margin-left: auto;
+  color: var(--color-ink-soft);
+  font-size: 0.6875rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-semibold);
+}
+
+.mdpdf-count-near {
+  color: var(--color-accent-dark);
+}
+
+.mdpdf-editor:has(.cm-focused) {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.mdpdf-codemirror {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  display: flex;
+}
+
+.mdpdf-codemirror .cm-editor {
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+}
+
+.mdpdf-codemirror .cm-content {
+  overflow-wrap: anywhere;
+}
+
+.mdpdf-codemirror .cm-editor.cm-focused {
+  outline: none;
+}
+
+.mdpdf-codemirror .cm-scroller {
+  font:
+    13.5px/1.75 'Noto Sans Mono',
+    monospace;
+}
+
+.mdpdf-drop {
+  position: absolute;
+  z-index: 2;
+  inset: 62px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px dashed var(--color-accent);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-accent-pale) 92%, transparent);
+  pointer-events: none;
+  animation: mdpdf-fade-in 160ms ease-out both;
+}
+
+.mdpdf-drop-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  box-shadow: var(--shadow-print-md);
+  color: var(--color-accent-dark);
+}
+
+.mdpdf-drop-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: var(--weight-bold);
+}
+
+.mdpdf-drop-hint {
+  margin: 0;
+  color: var(--color-ink-mid);
+  font-size: 0.8125rem;
+}
+
+.mdpdf-mobile-tabs {
+  display: none;
+}
