@@ -8,6 +8,7 @@ Belongs to the **Document Tools** vault. The tool only outputs PDF.
 - Input by typing/pasting or uploading a `.md` file.
 - A button to reformat the Markdown in the editor.
 - Supports basic Markdown/GFM, syntax highlighting per language, Mermaid, math formulas and images from public URLs.
+- YAML frontmatter at the top of a document renders as a key–value table; frontmatter that is not plain `key: value` lines renders as raw text.
 - Inline HTML through an allowlist (e.g. `<sup>`, `<sub>`, `<kbd>`, `<br>`); tags outside the allowlist and scripts are removed.
 - Download PDF; choose page size, orientation, margins, page numbers (on/off), font and theme. Fonts must fully support Vietnamese.
 - Adjust text, heading and link colors and the heading style (H1–H3).
@@ -68,3 +69,5 @@ Design documents are in this package's `docs/` directory (Phase 1):
 | `openapi.yaml` | API contract |
 | [TECH_STACK.md](docs/TECH_STACK.md) | libraries the tool adds |
 | `decisions/` | tool decisions |
+
+The UI design (layout, style presets, settings drawer, zoom, feedback) is in [docs/design/tools/markdown-to-pdf/UI.md](../../docs/design/tools/markdown-to-pdf/UI.md).

@@ -1,0 +1,123 @@
+/*
+ * The page scrolls inside the paper frame, not the well around it. The frame is capped to the well
+ * and reserves its scrollbar gutter, so its inner width never changes when a scrollbar appears
+ * (a ResizeObserver would not see that). The sizer clips the article's unscaled layout box, which
+ * would otherwise widen the scroll area; the well's right padding leaves room for the shadow.
+ */
+.mdpdf-preview-wrap {
+  background: var(--color-paper-deep);
+}
+
+.mdpdf-zoom {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding: 2px;
+  border: 1px solid var(--color-rule);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+}
+
+.mdpdf-zoom-step,
+.mdpdf-zoom-level {
+  height: 30px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--color-ink-mid);
+  cursor: pointer;
+  transition:
+    background var(--motion-state-change),
+    color var(--motion-state-change);
+}
+
+.mdpdf-zoom-step {
+  width: 30px;
+  display: grid;
+  place-items: center;
+}
+
+.mdpdf-zoom-step:hover {
+  background: var(--color-paper-deep);
+}
+
+.mdpdf-zoom-level {
+  min-width: 52px;
+  padding: 0 var(--space-2);
+  font: inherit;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--weight-bold);
+}
+
+.mdpdf-zoom-level[aria-pressed='true'] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.mdpdf-preview-well {
+  min-height: 0;
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px 28px 28px 20px;
+}
+
+.mdpdf-page-frame {
+  max-width: 100%;
+  max-height: 100%;
+  box-sizing: border-box;
+  flex: 0 0 auto;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+  border: 1px solid var(--color-ink);
+  background: var(--color-paper-raised);
+  box-shadow: 6px 6px 0 var(--color-ink);
+  transition:
+    width 280ms var(--ease-out-soft),
+    height 280ms var(--ease-out-soft);
+}
+
+.mdpdf-page-sizer {
+  overflow: hidden;
+}
+
+.mdpdf-preview {
+  overflow-wrap: anywhere;
+  transform-origin: top left;
+  transition: transform 280ms var(--ease-out-soft);
+}
+
+.mdpdf-preview pre {
+  overflow: auto;
+  padding: 12px;
+  background: var(--color-paper-deep);
+}
+
+.mdpdf-preview img {
+  max-width: 100%;
+}
+
+.mdpdf-preview table {
+  border-collapse: collapse;
+}
+
+.mdpdf-preview th,
+.mdpdf-preview td {
+  padding: 6px;
+  border: 1px solid var(--color-rule);
+}
+
+.mdpdf-preview .mdpdf-frontmatter {
+  width: 100%;
+  margin-bottom: 1.5em;
+  font-size: 0.9em;
+}
+
+.mdpdf-preview .mdpdf-frontmatter th {
+  width: 30%;
+  text-align: left;
+}

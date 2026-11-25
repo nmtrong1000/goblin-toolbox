@@ -168,7 +168,7 @@ function cssFor(options: PdfOptions) {
       ? 'h1,h2{border-bottom:1px solid currentColor;padding-bottom:.25em}'
       : '';
   const theme = options.theme === 'classic' ? 'line-height:1.55' : 'line-height:1.7';
-  return `body{display:flow-root;margin:0;font-family:${family};color:${options.colors.text};${theme};font-size:12pt}h1,h2,h3{color:${options.colors.heading}}a{color:${options.colors.link}}pre{white-space:pre-wrap;background:#f3f0eb;padding:12px}pre,code{font-family:'Noto Sans Mono',monospace}table{border-collapse:collapse;width:100%}td,th{border:1px solid #b8aa98;padding:6px}img{max-width:100%}${underline}`;
+  return `body{display:flow-root;margin:0;font-family:${family};color:${options.colors.text};${theme};font-size:12pt}h1,h2,h3{color:${options.colors.heading}}a{color:${options.colors.link}}pre{white-space:pre-wrap;background:#f3f0eb;padding:12px}pre,code{font-family:'Noto Sans Mono',monospace}table{border-collapse:collapse;width:100%}td,th{border:1px solid #b8aa98;padding:6px}.mdpdf-frontmatter{margin-bottom:1.5em;font-size:.9em}.mdpdf-frontmatter th{width:30%;color:${options.colors.heading};background:color-mix(in srgb,${options.colors.heading} 12%,#fff);text-align:left}img{max-width:100%}${underline}`;
 }
 
 async function inlineFonts(css: string) {

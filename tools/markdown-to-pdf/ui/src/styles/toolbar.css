@@ -1,0 +1,194 @@
+/*
+ * .button-primary comes from the Host stylesheet; .mdpdf-create only adds the tool's states to it.
+ * Keyframes are prefixed so they never clash with the Host's.
+ */
+.mdpdf-tool {
+  margin-top: var(--space-6);
+}
+
+.mdpdf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.mdpdf-button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  box-shadow: var(--shadow-print-sm);
+  color: var(--color-ink);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: var(--weight-semibold);
+  transition:
+    transform 120ms ease-out,
+    box-shadow 120ms ease-out,
+    background var(--motion-state-change),
+    color var(--motion-state-change);
+}
+
+.mdpdf-button:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--color-ink);
+}
+
+.mdpdf-button:active {
+  transform: translate(3px, 3px);
+  box-shadow: 0 0 0 var(--color-ink);
+}
+
+.mdpdf-upload:focus-within {
+  outline: 3px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
+.mdpdf-settings-toggle[aria-expanded='true'] {
+  background: var(--color-ink);
+  color: var(--color-paper);
+}
+
+.mdpdf-style-badge,
+.mdpdf-chip {
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-metadata);
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--tracking-metadata);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.mdpdf-style-badge {
+  background: var(--color-accent-pale);
+  color: var(--color-accent-dark);
+}
+
+.mdpdf-settings-toggle[aria-expanded='true'] .mdpdf-style-badge {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.mdpdf-chip {
+  border: 1px solid var(--color-olive);
+  color: var(--color-olive);
+}
+
+.mdpdf-create {
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin-left: auto;
+  padding-inline: 22px;
+}
+
+.mdpdf-create-busy {
+  background: var(--color-ink-mid);
+  cursor: progress;
+}
+
+.mdpdf-create-done {
+  background: var(--color-olive);
+  box-shadow: var(--shadow-print-md);
+}
+
+.mdpdf-done-mark {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-full);
+  background: var(--color-paper-raised);
+  color: var(--color-olive);
+  animation: mdpdf-pop 420ms var(--ease-out-soft) both;
+}
+
+.mdpdf-spin {
+  animation: mdpdf-spin 900ms linear infinite;
+}
+
+.mdpdf-icon-button {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--color-paper-deep);
+  color: var(--color-ink-mid);
+  cursor: pointer;
+  transition: background var(--motion-state-change);
+}
+
+.mdpdf-icon-button:hover {
+  background: var(--color-accent-pale);
+  color: var(--color-accent-dark);
+}
+
+.mdpdf-accent-icon {
+  flex-shrink: 0;
+  color: var(--color-accent);
+}
+
+.mdpdf-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+@keyframes mdpdf-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes mdpdf-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+
+  70% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes mdpdf-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes mdpdf-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes mdpdf-drawer-in {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+}
+
+@keyframes mdpdf-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}

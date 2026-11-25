@@ -1,0 +1,137 @@
+/*
+ * Reduced motion follows the Phase 6 decision: only sliding panels become fades.
+ */
+.mdpdf-toast {
+  position: fixed;
+  z-index: 30;
+  right: 24px;
+  bottom: 24px;
+  width: min(380px, calc(100vw - 32px));
+  display: flex;
+  gap: var(--space-3);
+  padding: 14px 14px 14px var(--space-4);
+  border: 1px solid var(--color-ink);
+  border-radius: var(--radius-md);
+  background: var(--color-paper-raised);
+  box-shadow: 5px 5px 0 var(--color-accent-dark);
+  animation: mdpdf-rise 320ms var(--ease-out-soft) both;
+}
+
+.mdpdf-toast-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-pale);
+  color: var(--color-accent-dark);
+}
+
+.mdpdf-toast-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.mdpdf-toast-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: var(--weight-bold);
+}
+
+.mdpdf-toast-message {
+  margin: 2px 0 0;
+  color: var(--color-ink-mid);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 720px) {
+  .mdpdf-toolbar .mdpdf-create {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .mdpdf-mobile-tabs {
+    display: flex;
+    gap: var(--space-2);
+    margin-bottom: var(--space-3);
+  }
+
+  .mdpdf-mobile-tabs button {
+    min-height: 44px;
+    flex: 1;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background: var(--color-paper-raised);
+    font: inherit;
+    font-weight: var(--weight-bold);
+  }
+
+  .mdpdf-mobile-tabs button[aria-pressed='true'] {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-paper);
+  }
+
+  .mdpdf-workspace {
+    height: auto;
+    display: block;
+  }
+
+  .mdpdf-pane {
+    height: 70vh;
+  }
+
+  .mdpdf-workspace .mdpdf-mobile-hidden {
+    display: none;
+  }
+
+  .mdpdf-backdrop {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    display: block;
+    border: 0;
+    background: color-mix(in srgb, var(--color-ink) 35%, transparent);
+    animation: mdpdf-fade-in 200ms ease-out both;
+  }
+
+  .mdpdf-drawer {
+    position: fixed;
+    z-index: 21;
+    top: auto;
+    right: 0;
+    width: auto;
+    max-height: 85vh;
+    border-radius: 12px 12px 0 0;
+    box-shadow: 0 -4px 0 var(--color-ink);
+    animation: mdpdf-sheet-in 260ms var(--ease-out-soft) both;
+  }
+
+  .mdpdf-drawer-footer {
+    position: sticky;
+    bottom: 0;
+    display: block;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+    border-top: 1px solid var(--color-rule-light);
+    background: var(--color-paper-raised);
+  }
+
+  .mdpdf-drawer-footer .mdpdf-create {
+    width: 100%;
+    margin: 0;
+  }
+
+  .mdpdf-toast {
+    right: var(--space-4);
+    bottom: var(--space-4);
+    left: var(--space-4);
+    width: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mdpdf-drawer {
+    animation-name: mdpdf-fade-in;
+  }
+}

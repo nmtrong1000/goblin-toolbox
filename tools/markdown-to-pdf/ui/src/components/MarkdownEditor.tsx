@@ -7,6 +7,7 @@ import { useEffect, useRef } from 'react';
 import { basicSetup } from 'codemirror';
 import { markdown } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
+import { goblinEditorTheme } from '#/lib/editorTheme.ts';
 
 type MarkdownEditorProps = {
   label: string;
@@ -29,8 +30,10 @@ export function MarkdownEditor({ label, value, onChange }: MarkdownEditorProps) 
     editor.current = new EditorView({
       doc: initial.current.value,
       extensions: [
+        goblinEditorTheme,
         basicSetup,
         markdown(),
+        EditorView.lineWrapping,
         EditorView.contentAttributes.of({ 'aria-label': initial.current.label }),
         EditorView.updateListener.of((update) => {
           if (update.docChanged) onChangeRef.current(update.state.doc.toString());

@@ -113,8 +113,31 @@ markdown.renderer.rules.fence = (tokens, index, options, environment, self) => {
     : self.renderToken(tokens, index, options);
 };
 
+const frontmatterBlock = /^---[ \t]*\r?\n([\s\S]*?)\r?\n---[ \t]*(?:\r?\n|$)/;
+const frontmatterField = /^([A-Za-z0-9_][\w .-]*):[ \t]*(.*)$/;
+
+const unquote = (value: string) => value.trim().replace(/^(["'])(.*)\1$/, '$2');
+
+function renderFrontmatter(block: string) {
+  const lines = block.split(/\r?\n/).filter((line) => line.trim() !== '');
+  const fields = lines.map((line) => frontmatterField.exec(line));
+  if (fields.length === 0 || fields.some((field) => field === null)) {
+    return `<pre class="mdpdf-frontmatter-raw"><code>${escapeHtml(block)}</code></pre>`;
+  }
+  const rows = fields
+    .filter((field): field is RegExpExecArray => field !== null)
+    .map(
+      ([, key, value]) =>
+        `<tr><th>${escapeHtml(key.trim())}</th><td>${escapeHtml(unquote(value))}</td></tr>`,
+    )
+    .join('');
+  return `<table class="mdpdf-frontmatter"><tbody>${rows}</tbody></table>`;
+}
+
 export function renderMarkdown(source: string) {
-  return markdown.render(source);
+  const frontmatter = frontmatterBlock.exec(source);
+  if (!frontmatter) return markdown.render(source);
+  return renderFrontmatter(frontmatter[1]) + markdown.render(source.slice(frontmatter[0].length));
 }
 
 export async function renderDiagrams() {

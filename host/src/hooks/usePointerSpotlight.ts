@@ -13,13 +13,14 @@ export function usePointerSpotlight(target: RefObject<HTMLElement | null>) {
 
     function paint() {
       if (!element) return;
-      current = {
+      const next = {
         x: current.x + (goal.x - current.x) * follow,
         y: current.y + (goal.y - current.y) * follow,
       };
+      const settled = Math.abs(goal.x - next.x) < 0.5 && Math.abs(goal.y - next.y) < 0.5;
+      current = settled ? goal : next;
       element.style.setProperty('--spot-x', `${current.x.toFixed(1)}px`);
       element.style.setProperty('--spot-y', `${current.y.toFixed(1)}px`);
-      const settled = Math.abs(goal.x - current.x) < 0.5 && Math.abs(goal.y - current.y) < 0.5;
       frame = settled ? 0 : requestAnimationFrame(paint);
     }
 
