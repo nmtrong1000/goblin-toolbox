@@ -3,7 +3,7 @@ import request from 'supertest';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { del, list, put } from '@vercel/blob';
 import markdownToPdfRouter from '#/routes/tool.ts';
-import { renderPdf } from '#/integrations/pdf-renderer.ts';
+import { renderPdf } from '#/integrations/pdfRenderer.ts';
 import { defaultOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
 
 vi.mock('@vercel/blob', () => ({
@@ -12,7 +12,7 @@ vi.mock('@vercel/blob', () => ({
   put: vi.fn(),
 }));
 
-vi.mock('#/integrations/pdf-renderer.ts', () => ({ renderPdf: vi.fn() }));
+vi.mock('#/integrations/pdfRenderer.ts', () => ({ renderPdf: vi.fn() }));
 
 const app = express();
 app.use(express.json());

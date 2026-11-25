@@ -1,7 +1,7 @@
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
-import { deleteFilesOlderThan, storePdf } from '#/integrations/blob-storage.ts';
+import { deleteFilesOlderThan, storePdf } from '#/integrations/blobStorage.ts';
 import { prepareImages } from '#/integrations/images.ts';
-import { renderPdf } from '#/integrations/pdf-renderer.ts';
+import { renderPdf } from '#/integrations/pdfRenderer.ts';
 
 export const fileLifetimeMs = 60 * 60 * 1000;
 

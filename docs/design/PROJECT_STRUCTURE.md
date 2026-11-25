@@ -12,7 +12,7 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 │   ├── ui-kit/              # design tokens and the Module Federation settings shared by Host and remotes
 │   └── server-kit/          # Express app factory, middleware, error format for tool APIs
 ├── scripts/
-│   └── new-tool.mjs         # pnpm new-tool <slug>: creates a tool and registers its services
+│   └── newTool.mjs          # pnpm new-tool <slug>: creates a tool and registers its services
 ├── tools/
 │   └── <slug>/              # one tool: UI remote + API service + its own docs
 └── docs/
@@ -34,8 +34,8 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 host/
 ├── catalog.config.json      # vaults, which tool belongs to which vault, order
 ├── scripts/
-│   ├── build-catalog        # merges tool manifests + catalog.config.json into catalog.json
-│   └── generate-contracts   # renders each tool's openapi.yaml to public/contracts/<slug>.html
+│   ├── buildCatalog.mjs     # merges tool manifests + catalog.config.json into catalog.json
+│   └── generateContracts.mjs # renders each tool's openapi.yaml to public/contracts/<slug>.html
 ├── src/                     # layout inside src/: UI_CONVENTIONS.md
 │   ├── app/                 # route table and layout
 │   ├── pages/               # home search, vault, tool page, not found
@@ -66,7 +66,7 @@ tools/<slug>/
 └── api/                     # Tool API Service
     ├── src/
     │   ├── index.ts         # service entrypoint in vercel.json: createApp() from server-kit
-    │   ├── dev-server.ts    # local runner used by vercel dev
+    │   ├── devServer.ts     # local runner used by vercel dev
     │   ├── routes/          # HTTP layer: tool and cron routers, Zod validation, error mapping
     │   ├── services/        # business logic; never imports Express
     │   └── integrations/    # external systems: Blob, browsers, outbound HTTP

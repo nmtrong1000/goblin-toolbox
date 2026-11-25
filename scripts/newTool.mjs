@@ -83,7 +83,7 @@ const files = {
     private: true,
     type: 'module',
     imports: { '#/*': './src/*' },
-    scripts: { dev: 'tsx watch src/dev-server.ts', typecheck: 'tsc --noEmit' },
+    scripts: { dev: 'tsx watch src/devServer.ts', typecheck: 'tsc --noEmit' },
     dependencies: { '@goblin/server-kit': 'workspace:*', express: 'catalog:' },
     devDependencies: {
       '@types/express': 'catalog:',
@@ -98,7 +98,7 @@ const files = {
     include: ['src', 'tests'],
   }),
   'api/src/index.ts': `import { createApp } from '@goblin/server-kit';\nimport tool from '#/routes/tool.ts';\n\nconst app = createApp({\n  slug: '${slug}',\n  routes: [{ path: '/api/tools/${slug}', router: tool }],\n});\n\nexport default app;\n`,
-  'api/src/dev-server.ts': `import app from '#/index.ts';\n\nconst port = Number(process.env.PORT ?? 3000);\n\napp.listen(port, '0.0.0.0', () => {\n  process.stdout.write(\`API listening on http://localhost:\${port}\\n\`);\n});\n`,
+  'api/src/devServer.ts': `import app from '#/index.ts';\n\nconst port = Number(process.env.PORT ?? 3000);\n\napp.listen(port, '0.0.0.0', () => {\n  process.stdout.write(\`API listening on http://localhost:\${port}\\n\`);\n});\n`,
   'api/src/routes/tool.ts': `import { Router } from 'express';\n\nconst router: Router = Router();\n\nexport default router;\n`,
   'api/tests/app.test.ts': `import request from 'supertest';\nimport { describe, expect, it } from 'vitest';\nimport app from '#/index.ts';\n\ndescribe('${title} API', () => {\n  it('returns its health', async () => {\n    const response = await request(app).get('/api/tools/${slug}/health');\n\n    expect(response.status).toBe(200);\n    expect(response.body).toEqual({ status: 'ok', service: '${slug}' });\n  });\n});\n`,
 };

@@ -4,7 +4,7 @@ import { renderDiagrams } from '@goblin/tool-markdown-to-pdf-shared/renderer';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
 import { useContentHeight } from '#/hooks/useContentHeight.ts';
 import { usePreviewScale } from '#/hooks/usePreviewScale.ts';
-import { pageLayout, previewCss } from '#/lib/page-layout.ts';
+import { pageLayout, previewCss } from '#/lib/pageLayout.ts';
 
 type PreviewPaneProps = {
   hidden: boolean;

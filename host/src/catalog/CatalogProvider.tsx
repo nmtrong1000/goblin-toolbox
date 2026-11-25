@@ -1,7 +1,7 @@
 import { type ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { CatalogContext } from '#/catalog/catalog-context.ts';
-import { loadCatalog } from '#/catalog/load-catalog.ts';
+import { CatalogContext } from '#/catalog/catalogContext.ts';
+import { loadCatalog } from '#/catalog/loadCatalog.ts';
 import type { Catalog } from '#/catalog/types.ts';
 
 type CatalogProviderProps = { children: ReactNode };

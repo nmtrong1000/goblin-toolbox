@@ -6,10 +6,10 @@
     "#/*": "./src/*"
   },
   "scripts": {
-    "catalog": "node scripts/build-catalog.mjs",
-    "generate-contracts": "node scripts/generate-contracts.mjs",
-    "dev": "node scripts/build-catalog.mjs && node scripts/generate-contracts.mjs && vite",
-    "build": "node scripts/build-catalog.mjs && node scripts/generate-contracts.mjs && tsc --noEmit && vite build",
+    "catalog": "node scripts/buildCatalog.mjs",
+    "generate-contracts": "node scripts/generateContracts.mjs",
+    "dev": "node scripts/buildCatalog.mjs && node scripts/generateContracts.mjs && vite",
+    "build": "node scripts/buildCatalog.mjs && node scripts/generateContracts.mjs && tsc --noEmit && vite build",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

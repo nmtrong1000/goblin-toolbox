@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { searchTools } from '#/catalog/search-tools.ts';
+import { searchTools } from '#/catalog/searchTools.ts';
 import type { CatalogTool, Localized } from '#/catalog/types.ts';
 
 const tool: CatalogTool = {

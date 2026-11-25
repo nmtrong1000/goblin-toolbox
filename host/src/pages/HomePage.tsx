@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { searchTools } from '#/catalog/search-tools.ts';
+import { searchTools } from '#/catalog/searchTools.ts';
 import { useCatalog } from '#/catalog/useCatalog.ts';
 import { useLocalize } from '#/catalog/useLocalize.ts';
 import { SearchForm } from '#/components/SearchForm.tsx';

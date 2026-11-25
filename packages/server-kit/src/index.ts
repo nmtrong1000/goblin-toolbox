@@ -1,7 +1,7 @@
 import express, { type Express, type RequestHandler, type Router } from 'express';
 import { errorHandler, notFound } from '#/middleware/errors.ts';
-import { requestId } from '#/middleware/request-id.ts';
-import { requestLog } from '#/middleware/request-log.ts';
+import { requestId } from '#/middleware/requestId.ts';
+import { requestLog } from '#/middleware/requestLog.ts';
 
 export type ServiceRoute = { path: string; router: Router };
 
