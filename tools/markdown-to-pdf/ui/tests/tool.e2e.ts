@@ -62,7 +62,7 @@ test('editor, upload, reformat, preview, options, locale and error states work',
   await page.getByLabel('Page size').selectOption('A5');
   await expect(page.locator('.mdpdf-preview')).toHaveCSS('min-height', '794px');
 
-  await page.getByLabel('Language').selectOption('vi');
+  await page.getByRole('button', { name: 'VI', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Tạo PDF' })).toBeVisible();
   await page.route('**/api/tools/markdown-to-pdf', (route) =>
     route.fulfill({

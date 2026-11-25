@@ -6,5 +6,6 @@
     "vi": "Soạn thảo, xem trước và tải PDF từ Markdown."
   },
   "keywords": ["markdown", "pdf", "document", "convert"],
-  "remote": "/remotes/markdown-to-pdf/remoteEntry.js"
+  "remote": "/remotes/markdown-to-pdf/remoteEntry.js",
+  "icon": "/remotes/markdown-to-pdf/icon.svg"
 }

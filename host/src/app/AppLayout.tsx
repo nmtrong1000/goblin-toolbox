@@ -1,31 +1,33 @@
 import { Link, Outlet } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { CatalogProvider } from '#/catalog/CatalogProvider.tsx';
-import { LanguageSelect } from '#/components/LanguageSelect.tsx';
+import { LanguageToggle } from '#/components/LanguageToggle.tsx';
+import { MainNav } from '#/components/MainNav.tsx';
+import { SiteFooter } from '#/components/SiteFooter.tsx';
 
 export function AppLayout() {
   const { t } = useTranslation();
 
   return (
-    <div className="site-frame">
+    <div className="site">
       <header className="masthead">
-        <Link className="brand" to="/">
-          {t('brand')}
-        </Link>
-        <nav aria-label={t('nav.home')} className="main-nav">
-          <Link to="/">{t('nav.home')}</Link>
-          <Link to="/vaults">{t('nav.vaults')}</Link>
-        </nav>
-        <LanguageSelect />
+        <div className="container masthead-inner">
+          <Link className="brand" to="/" viewTransition>
+            <span aria-hidden="true" className="brand-mark">
+              G
+            </span>
+            <span>{t('brand')}</span>
+          </Link>
+          <MainNav />
+          <LanguageToggle />
+        </div>
       </header>
-      <main>
+      <main className="site-main">
         <CatalogProvider>
           <Outlet />
         </CatalogProvider>
       </main>
-      <footer className="site-footer">
-        <span>{t('brand')}</span>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

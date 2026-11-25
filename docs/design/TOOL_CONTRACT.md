@@ -17,11 +17,13 @@ What every tool must provide so the Host can show it and Vercel can run it. The 
   "name": { "en": "…", "vi": "…" },
   "description": { "en": "…", "vi": "…" },
   "keywords": ["…"],
-  "remote": "/remotes/<slug>/remoteEntry.js"
+  "remote": "/remotes/<slug>/remoteEntry.js",
+  "icon": "/remotes/<slug>/icon.svg"
 }
 ```
 
 - Every user-facing field has both `en` and `vi`.
+- `icon` is optional: the URL of a square SVG served by the tool's UI remote (put it in `ui/public/icon.svg`), drawn as a line icon on a 24 × 24 view box. Only its shape is used: the Host paints it in its own color through a CSS mask, so the SVG's colors do not matter. It must start with `/remotes/<slug>/` and end in `.svg`; the catalog build fails otherwise. Without it, or when it fails to load, the Host shows its default tool icon.
 - The manifest does not say which vault the tool is in. Vault membership belongs to the Host (`host/catalog.config.json`).
 
 ## UI remote
