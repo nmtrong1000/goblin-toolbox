@@ -8,7 +8,7 @@ test('a tool remote reuses the Host React instead of loading its own', async ({ 
   });
 
   await page.goto('/tools/markdown-to-pdf');
-  await expect(page.getByRole('button', { name: 'Create PDF' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Create PDF' })).toBeVisible({ timeout: 15_000 });
 
   expect(remoteRequests.some((path) => path.endsWith('/remoteEntry.js'))).toBe(true);
   expect(

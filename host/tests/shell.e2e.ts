@@ -24,6 +24,7 @@ test('home lists tools as cards with their manifest icon', async ({ page }) => {
 
 test('search types hints while empty, filters, and clears', async ({ page }) => {
   await page.goto('/');
+  await expect(page.getByLabel('Search tools')).toBeVisible();
 
   const hint = page.locator('.typing-placeholder');
   await expect(hint).toHaveText(/^(markdown|pdf|markdown to pdf)$/, { timeout: 5000 });

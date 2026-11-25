@@ -1,6 +1,8 @@
 /*
  * Product decision (Phase 6): under reduced motion only the page slide is removed; the stamp,
  * pointer halftone, typing hint and hover feedback stay on. See docs/design/DESIGN.md, Motion.
+ * Page transitions animate the root group, not a named <main>: a view-transition-name makes a
+ * stacking context, which would trap a tool's fixed overlays below the sticky masthead.
  */
 @keyframes rise {
   from {
@@ -78,16 +80,16 @@
   animation-delay: calc(6 * var(--motion-stagger));
 }
 
-::view-transition-old(page) {
+::view-transition-old(root) {
   animation: page-out 140ms ease-in both;
 }
 
-::view-transition-new(page) {
+::view-transition-new(root) {
   animation: page-in var(--motion-page) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-new(page) {
+  ::view-transition-new(root) {
     animation: page-fade-in var(--motion-page) both;
   }
 }
