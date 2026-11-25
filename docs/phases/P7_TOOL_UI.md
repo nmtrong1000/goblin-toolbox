@@ -17,7 +17,7 @@
 | T7 | Preview | A wider preview column (editor : preview = 5 : 7); Fit-to-width by default with zoom steps 50–150 % and a scrolling well; print-style paper shadow; the page resizes smoothly; a badge shows the size and orientation. | T4 | [x] |
 | T8 | Editor | A CodeMirror theme in the Goblin palette (headings, emphasis, links, code, quotes), a clear active line, and an editor header with a character count against the 100,000 limit. | T1 | [x] |
 | T9 | Tests and docs | Rewrite `tool.e2e.ts` for the new controls; unit tests for presets and color helpers; i18n parity; tool design in `docs/design/tools/markdown-to-pdf/UI.md`; tool README. | T1–T8 | [x] |
-| T10 | Deploy | Preview deployment with the full test list; production after HUMAN REVIEW. | T9 | [ ] |
+| T10 | Deploy | Preview deployment with the full test list; production after HUMAN REVIEW. | T9 | [x] |
 
 ## Test
 
@@ -43,6 +43,11 @@
 ## Output
 
 - New Markdown to PDF UI in production; tool UI design document.
+
+## Verification
+
+- Merge `7097953` was pushed to `main` and deployed to production; the user confirmed on 2026-11-25 that `https://goblin-toolbox.vercel.app/tools/markdown-to-pdf` runs the new UI.
+- Before the merge (local and preview `goblin-toolbox-r60k2mvm5`): lint, format, typecheck, 57 unit tests and 19 Playwright tests passed; a real PDF of a long document with frontmatter and three Mermaid diagrams rendered with the frontmatter table in the chosen style; Lighthouse accessibility 100 on the tool page with the drawer and Advanced open; no horizontal scroll at 390 px in `en` and `vi`.
 
 ## Decisions
 
