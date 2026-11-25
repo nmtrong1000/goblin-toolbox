@@ -45,7 +45,7 @@ These are local renderer measurements, not Vercel function measurements; the spi
 - Production Blob access uses Vercel OIDC through `VERCEL_OIDC_TOKEN` and `BLOB_STORE_ID`; Vercel injects the short-lived OIDC token. Local development can use `BLOB_READ_WRITE_TOKEN`.
 - `CRON_SECRET`: sensitive production bearer token used by the daily expired-file cleanup cron.
 - `LOCAL_CHROME_PATH`: optional local Chrome executable path; Linux CI and Vercel use `@sparticuz/chromium`.
-- `LOCAL_PDF_OUTPUT`: set to `1` by the backend dev script to download PDFs directly during local development.
+- `LOCAL_PDF_OUTPUT`: set to `1` by the API service's dev script to download PDFs directly during local development.
 
 ### API examples
 

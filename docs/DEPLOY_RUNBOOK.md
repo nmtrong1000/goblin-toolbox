@@ -8,7 +8,9 @@ For a manual deployment, link the repository with `vercel link` once, then use `
 
 The active shared firewall rule matches `/api/`, limits requests to 100 per IP per 60 seconds, and returns `429` after the limit. Treat this as a provisional threshold and review it against real traffic before tightening it.
 
-Content-hashed files under `/assets/*` are served with a one-year immutable cache policy. HTML uses revalidation so new deployments can reference new asset hashes.
+Content-hashed files under `/assets/*` (Host) and `/remotes/<slug>/assets/*` (tool remotes) are served with a one-year immutable cache policy. HTML and `remoteEntry.js` use revalidation so new deployments can reference new asset hashes.
+
+The project uses Vercel Services: `vercel.json` defines one static service for the Host, one static service per tool remote and one function per tool API, and routes paths to them. Every service builds separately but ships in the same deployment.
 
 ## Environment variables
 
@@ -22,9 +24,9 @@ Never commit `.env.local` or values copied from Vercel. Redeploy after changing 
 
 ## Logs and health
 
-Use **Vercel → Project → Deployments → deployment → Functions → Logs** to inspect function logs. Each API log is JSON and includes the request ID, method, path, status and duration. The matching `x-request-id` response header identifies a request. Do not log request or response bodies.
+Use **Vercel → Project → Deployments → deployment → Functions → Logs**, or `vercel logs --deployment <url>`, to inspect function logs. Each API log is JSON and includes the request ID, method, path, status and duration. The matching `x-request-id` response header identifies a request. Do not log request or response bodies.
 
-Check `/api/health` after deployment. It should return `200` with `{"status":"ok"}` and an `x-request-id` header.
+Check each API service's health after deployment, e.g. `/api/tools/markdown-to-pdf/health`. It should return `200` with `{"status":"ok","service":"<slug>"}` and an `x-request-id` header.
 
 ## Production configuration review
 
