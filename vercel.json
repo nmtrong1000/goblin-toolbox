@@ -5,6 +5,7 @@
       "root": "host",
       "framework": "vite",
       "buildCommand": "pnpm build",
+      "devCommand": "pnpm dev --port $PORT",
       "outputDirectory": "dist",
       "rewrites": [
         {
