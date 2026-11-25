@@ -15,6 +15,7 @@
   "dependencies": {
     "@module-federation/runtime": "catalog:",
     "i18next": "catalog:",
+    "lucide-react": "^1.78.0",
     "react": "catalog:",
     "react-dom": "catalog:",
     "react-i18next": "catalog:",

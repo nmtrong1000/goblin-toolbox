@@ -1,0 +1,134 @@
+.tool-page {
+  padding-block: 28px var(--space-16);
+}
+
+.tool-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-top: var(--space-5);
+  padding-bottom: var(--space-6);
+  border-bottom: 1px solid var(--color-rule);
+}
+
+.tool-header-text {
+  min-width: 0;
+}
+
+.tool-header .chip {
+  margin-left: auto;
+}
+
+.tool-title {
+  margin: 0;
+  font-size: 2.25rem;
+  font-weight: var(--weight-bold);
+  letter-spacing: -0.04em;
+  line-height: 1.1;
+}
+
+.tool-description {
+  margin: var(--space-1) 0 0;
+  color: var(--color-ink-mid);
+  font-size: 0.9375rem;
+}
+
+.tool-skeleton {
+  margin-top: 28px;
+}
+
+.tool-skeleton-bar {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.tool-skeleton-panes {
+  min-height: 480px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--space-4);
+  border: 1px solid var(--color-rule-light);
+  border-radius: var(--radius-md);
+}
+
+.tool-skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: var(--space-5);
+  border-right: 1px solid var(--color-rule-light);
+}
+
+.tool-skeleton-paper-wrap {
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  background: var(--color-paper-deep);
+}
+
+.skeleton {
+  display: block;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    var(--color-paper-deep) 0,
+    var(--color-paper) 40%,
+    var(--color-paper-deep) 80%
+  );
+  background-size: 960px 100%;
+  animation: skeleton-shimmer 1.4s linear infinite;
+}
+
+.skeleton-button {
+  width: 132px;
+  height: 48px;
+}
+
+.skeleton-button-end {
+  width: 150px;
+  margin-left: auto;
+}
+
+.skeleton-line {
+  height: 12px;
+}
+
+.skeleton-paper {
+  width: 62%;
+  height: 400px;
+  background-color: var(--color-paper-raised);
+  background-image: none;
+  box-shadow: 4px 4px 0 var(--color-rule-light);
+}
+
+.tool-skeleton-label {
+  margin: var(--space-3) 0 0;
+  color: var(--color-ink-soft);
+  font-size: var(--font-size-body-sm);
+}
+
+@media (max-width: 760px) {
+  .tool-header {
+    flex-wrap: wrap;
+  }
+
+  .tool-header .chip {
+    margin-left: 0;
+  }
+
+  .tool-title {
+    font-size: 1.75rem;
+  }
+
+  .tool-skeleton-panes {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-skeleton-lines {
+    border-right: 0;
+  }
+
+  .tool-skeleton-paper-wrap {
+    display: none;
+  }
+}

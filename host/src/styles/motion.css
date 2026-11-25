@@ -1,0 +1,93 @@
+/*
+ * Product decision (Phase 6): under reduced motion only the page slide is removed; the stamp,
+ * pointer halftone, typing hint and hover feedback stay on. See docs/design/DESIGN.md, Motion.
+ */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@keyframes stamp-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes skeleton-shimmer {
+  from {
+    background-position: -480px 0;
+  }
+
+  to {
+    background-position: 480px 0;
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+@keyframes page-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+.rise {
+  animation: rise var(--motion-enter) both;
+}
+
+.rise-1 {
+  animation-delay: calc(1 * var(--motion-stagger));
+}
+
+.rise-2 {
+  animation-delay: calc(2 * var(--motion-stagger));
+}
+
+.rise-3 {
+  animation-delay: calc(3 * var(--motion-stagger));
+}
+
+.rise-4 {
+  animation-delay: calc(4 * var(--motion-stagger));
+}
+
+.rise-5 {
+  animation-delay: calc(5 * var(--motion-stagger));
+}
+
+.rise-6 {
+  animation-delay: calc(6 * var(--motion-stagger));
+}
+
+::view-transition-old(page) {
+  animation: page-out 140ms ease-in both;
+}
+
+::view-transition-new(page) {
+  animation: page-in var(--motion-page) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-new(page) {
+    animation: page-fade-in var(--motion-page) both;
+  }
+}
