@@ -14,7 +14,7 @@
 | H4 | Layout | Sticky masthead with icon nav, an active-page marker and an `EN / VI` toggle; home hero with a decorative background and a search field with an icon and a clear button; a grid of tool cards (icon, name, description, vault chip); vault cards with tool counts; tool page with a breadcrumb, a compact header and a loading skeleton; footer with nav links; illustrated 404 and tool load error. | H1, H2, H3 | [x] |
 | H5 | Motion | Route transitions with the View Transitions API through React Router `viewTransition`; staggered card entrance; smooth filtering while searching; hover and press feedback on buttons, links and cards. Browsers without View Transitions navigate normally. | H4 | [x] |
 | H6 | Tests and docs | Update `host/tests/federation.e2e.ts` and the locale parity test; desktop and mobile checks; update [DESIGN.md](../design/DESIGN.md) and [UI_CONVENTIONS.md](../design/UI_CONVENTIONS.md) if a rule changes. | H5 | [x] |
-| H7 | Deploy | Preview deployment with the full test list; production after HUMAN REVIEW. | H6 | [ ] |
+| H7 | Deploy | Preview deployment with the full test list; production after HUMAN REVIEW. | H6 | [x] |
 
 ## Design
 
@@ -63,6 +63,12 @@ Mockup (home desktop, tool page loading, home mobile): https://claude.ai/artifac
 ## Output
 
 - New Host UI in production; updated `DESIGN.md`, `TOOL_CONTRACT.md` and `pnpm new-tool`.
+
+## Verification
+
+- Merge `00f3178` passed GitHub CI (lint, format, typecheck, unit tests, Playwright, build) and deployed to production as `https://goblin-toolbox-659607tdb-john-does-projects-37100f9f.vercel.app`; `https://goblin-toolbox.vercel.app` serves it.
+- Production smoke checks on 2026-11-25: `/`, `/vaults/document-tools`, `/tools/markdown-to-pdf`, `/remotes/markdown-to-pdf/icon.svg` and `/api/tools/markdown-to-pdf/health` return `200`; `/catalog.json` carries the tool `icon`; the Host `bootstrap` chunk holds the new shell; a PDF request returned `200`.
+- Before the merge: Lighthouse accessibility 100 and best practices 100 on `/` (local); no horizontal scroll at 390 px on every Host page in `en` and `vi`; the Host JS grew from 199.0 kB to 203.6 kB gzip.
 
 ## Decisions
 
