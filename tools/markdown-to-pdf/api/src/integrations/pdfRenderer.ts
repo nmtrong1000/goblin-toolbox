@@ -7,6 +7,12 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import type { Browser } from 'puppeteer-core';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
+import {
+  documentCss,
+  footerTemplate,
+  pageDimensions,
+  pdfMargins,
+} from '#/integrations/pdfPageSetup.ts';
 
 let browser: Browser | undefined;
 const assetsDir =
@@ -33,15 +39,8 @@ export async function renderPdf(markdown: string, options: PdfOptions) {
         printBackground: true,
         displayHeaderFooter: options.pageNumbers,
         headerTemplate: '<div style="width:100%;font-size:1px;line-height:1px">&nbsp;</div>',
-        footerTemplate: options.pageNumbers
-          ? '<div style="font-size:8px;width:100%;text-align:center"><span class="pageNumber"></span> / <span class="totalPages"></span></div>'
-          : '<span></span>',
-        margin: {
-          top: `${marginMm(options.margin)}mm`,
-          bottom: `${marginMm(options.margin)}mm`,
-          left: `${marginMm(options.margin)}mm`,
-          right: `${marginMm(options.margin)}mm`,
-        },
+        footerTemplate: footerTemplate(options),
+        margin: pdfMargins(options),
       });
     } catch (error) {
       if (timedOut) throw new Error('RENDER_TIMEOUT');
@@ -58,12 +57,12 @@ export async function renderPreviewScreenshot(markdown: string, options: PdfOpti
   const page = await createRenderPage(markdown, options);
   try {
     const dimensions = pageDimensions(options);
-    await page.evaluate(({ width, height, margin }) => {
+    await page.evaluate(({ width, height, padding }) => {
       const documentPage = document.querySelector<HTMLElement>('#document')!;
       documentPage.style.boxSizing = 'border-box';
       documentPage.style.width = `${width}px`;
       documentPage.style.minHeight = `${height}px`;
-      documentPage.style.padding = `${margin}px`;
+      documentPage.style.padding = padding;
       documentPage.style.background = '#ffffff';
     }, dimensions);
     return await page.screenshot({ type: 'png' });
@@ -109,7 +108,7 @@ async function createRenderPage(markdown: string, options: PdfOptions) {
       document.querySelector('#document')!.innerHTML = window.renderMarkdown(source);
       return window.renderDiagrams();
     }, markdown);
-    await page.addStyleTag({ content: `${theme}\n${cssFor(options)}` });
+    await page.addStyleTag({ content: `${theme}\n${documentCss(options)}` });
     await page.evaluate(async () => {
       await document.fonts.ready;
       await Promise.all(
@@ -121,21 +120,6 @@ async function createRenderPage(markdown: string, options: PdfOptions) {
     if (browser?.connected) await page.close().catch(() => undefined);
     throw error;
   }
-}
-
-function pageDimensions(options: PdfOptions) {
-  const sizes = {
-    A4: [794, 1123],
-    A5: [559, 794],
-    Letter: [816, 1056],
-    Legal: [816, 1344],
-  } as const;
-  const [portraitWidth, portraitHeight] = sizes[options.pageSize];
-  return {
-    width: options.orientation === 'landscape' ? portraitHeight : portraitWidth,
-    height: options.orientation === 'landscape' ? portraitWidth : portraitHeight,
-    margin: marginMm(options.margin) * (96 / 25.4),
-  };
 }
 
 function localChromePath() {
@@ -155,20 +139,6 @@ function localChromePath() {
         ? ['C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe']
         : ['/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'];
   return candidates.find((candidate) => existsSync(candidate));
-}
-
-function marginMm(margin: PdfOptions['margin']) {
-  return margin === 'narrow' ? 10 : margin === 'wide' ? 25 : 20;
-}
-
-function cssFor(options: PdfOptions) {
-  const family = options.font === 'noto-serif' ? 'Noto Serif, serif' : 'Noto Sans, sans-serif';
-  const underline =
-    options.headingStyle === 'underline'
-      ? 'h1,h2{border-bottom:1px solid currentColor;padding-bottom:.25em}'
-      : '';
-  const theme = options.theme === 'classic' ? 'line-height:1.55' : 'line-height:1.7';
-  return `body{display:flow-root;margin:0;font-family:${family};color:${options.colors.text};${theme};font-size:12pt}h1,h2,h3{color:${options.colors.heading}}a{color:${options.colors.link}}pre{white-space:pre-wrap;background:#f3f0eb;padding:12px}pre,code{font-family:'Noto Sans Mono',monospace}table{border-collapse:collapse;width:100%}td,th{border:1px solid #b8aa98;padding:6px}.mdpdf-frontmatter{margin-bottom:1.5em;font-size:.9em}.mdpdf-frontmatter th{width:30%;color:${options.colors.heading};background:color-mix(in srgb,${options.colors.heading} 12%,#fff);text-align:left}img{max-width:100%}${underline}`;
 }
 
 async function inlineFonts(css: string) {

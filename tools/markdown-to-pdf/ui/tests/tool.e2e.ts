@@ -75,10 +75,20 @@ test('presets, page settings and advanced settings reach the PDF request', async
   await expect(page.locator('.mdpdf-preview')).toHaveCSS('min-height', '794px');
   await drawer.getByRole('radio', { name: 'Landscape' }).check({ force: true });
   await drawer.getByRole('radio', { name: 'Wide' }).check({ force: true });
-  await drawer.getByRole('switch', { name: 'Show page numbers' }).uncheck({ force: true });
+  await drawer.getByRole('radio', { name: 'Right' }).check({ force: true });
+  await drawer.getByRole('radio', { name: '1', exact: true }).check({ force: true });
+  await expect(drawer.getByText('Page numbers appear in the PDF.')).toBeVisible();
   await expect(page.getByText('A5 · Landscape')).toBeVisible();
 
   await drawer.getByRole('button', { name: /Advanced/ }).click();
+  await expect(drawer.getByRole('radio', { name: 'Compact' })).toBeChecked();
+  const top = drawer.getByRole('spinbutton', { name: 'Top' });
+  await top.fill('30');
+  await expect(drawer.getByRole('radio', { name: 'Wide' })).not.toBeChecked();
+  await drawer.getByRole('radio', { name: 'Narrow' }).check({ force: true });
+  await expect(top).toHaveValue('10');
+  await top.fill('30');
+  await expect(drawer.getByRole('radio', { name: 'Narrow' })).not.toBeChecked();
   await drawer.getByRole('radio', { name: 'Sans' }).check({ force: true });
   await expect(page.getByRole('button', { name: /^Settings/ })).toContainText('Custom');
   const linkHex = drawer.getByLabel('Link color value');
@@ -103,8 +113,11 @@ test('presets, page settings and advanced settings reach the PDF request', async
     .toEqual({
       pageSize: 'A5',
       orientation: 'landscape',
-      margin: 'wide',
-      pageNumbers: false,
+      margin: 'narrow',
+      customMargins: { top: 30, right: 10, bottom: 10, left: 10 },
+      pageNumbers: true,
+      pageNumberPosition: 'right',
+      pageNumberFormat: 'current',
       font: 'noto-sans',
       theme: 'classic',
       colors: { text: '#222222', heading: '#1d1b18', link: '#123456' },

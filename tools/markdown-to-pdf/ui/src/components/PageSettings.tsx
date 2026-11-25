@@ -1,6 +1,7 @@
 import { RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
+import { PageNumberSettings } from '#/components/PageNumberSettings.tsx';
 import { PageSizePicker } from '#/components/PageSizePicker.tsx';
 import { SegmentedControl } from '#/components/SegmentedControl.tsx';
 import { ToggleSwitch } from '#/components/ToggleSwitch.tsx';
@@ -57,8 +58,8 @@ export function PageSettings({ options, onChange }: PageSettingsProps) {
           }))}
           legend={t('margin')}
           name="mdpdf-margin"
-          onChange={(value) => update('margin', value)}
-          value={options.margin}
+          onChange={(value) => onChange({ ...options, margin: value, customMargins: undefined })}
+          value={options.customMargins ? undefined : options.margin}
         />
       </div>
       <ToggleSwitch
@@ -66,6 +67,7 @@ export function PageSettings({ options, onChange }: PageSettingsProps) {
         label={t('pageNumbers')}
         onChange={(value) => update('pageNumbers', value)}
       />
+      {options.pageNumbers && <PageNumberSettings onChange={onChange} options={options} />}
     </section>
   );
 }

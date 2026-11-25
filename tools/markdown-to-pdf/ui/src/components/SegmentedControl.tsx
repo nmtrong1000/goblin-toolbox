@@ -10,7 +10,7 @@ export type SegmentChoice<T extends string> = {
 type SegmentedControlProps<T extends string> = {
   legend: string;
   name: string;
-  value: T;
+  value: T | undefined;
   choices: SegmentChoice<T>[];
   onChange: (value: T) => void;
 };

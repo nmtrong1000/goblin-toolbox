@@ -10,7 +10,7 @@ Belongs to the **Document Tools** vault. The tool only outputs PDF.
 - Supports basic Markdown/GFM, syntax highlighting per language, Mermaid, math formulas and images from public URLs.
 - YAML frontmatter at the top of a document renders as a key–value table; frontmatter that is not plain `key: value` lines renders as raw text.
 - Inline HTML through an allowlist (e.g. `<sup>`, `<sub>`, `<kbd>`, `<br>`); tags outside the allowlist and scripts are removed.
-- Download PDF; choose page size, orientation, margins, page numbers (on/off), font and theme. Fonts must fully support Vietnamese.
+- Download PDF; choose page size, orientation, margins (a preset or each side in mm, 0–50), page numbers (on/off, left/center/right, `n / total` or `n`), font and density (Comfortable or Compact, sent as `theme`). Fonts must fully support Vietnamese.
 - Adjust text, heading and link colors and the heading style (H1–H3).
 - The PDF matches the preview.
 - The API accepts JSON with Markdown and options. Deployed runs upload the PDF to Blob and return a download URL; local development returns the PDF as a direct browser download without Blob storage.
