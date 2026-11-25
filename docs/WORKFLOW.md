@@ -60,7 +60,7 @@ flowchart TD
 
 The agent presents all of the following in one message:
 
-- **Changes:** summary by package (`frontend`, `backend`, `tools/*`) and by task ID.
+- **Changes:** summary by package (`host`, `packages/*`, `tools/*`) and by task ID.
 - **Test results:** number of passing automated tests per package and the result of each phase test item, with evidence such as logs, API responses or deployment URLs.
 - **Failures and issues fixed:** listed from the TESTING and REVIEW loops.
 - **Still open:** failures not fixed when rounds ran out, known limitations, deviations from the plan.
@@ -110,16 +110,22 @@ The agent presents all of the following in one message:
 
 ## Import rules
 
-- Inside every package (`frontend`, `backend`, each `tools/<slug>`): imports of the package's own files use Node.js subpath imports `#/`, declared in that package's `package.json` as `"imports": { "#/*": "./src/*" }`, e.g. `#/shared/components/index.ts`, including `@import` in CSS. No relative `./` or `../` paths.
-- Other packages are imported by package name and export, e.g. `@goblin/tool-<slug>/api`, never by a path into the package folder.
-- A tool package never imports another tool package.
-- oxlint enforces the first and last rule (`no-restricted-imports` in `.oxlintrc.json`); CSS `@import` is checked in review.
+- Inside every package (`host`, `packages/*`, and `tools/<slug>/ui`, `api`, `shared`): imports of the package's own files use Node.js subpath imports `#/`, declared in that package's `package.json` as `"imports": { "#/*": "./src/*" }`, with the real file extension, e.g. `#/shared/components/index.ts`, including `@import` in CSS. No relative `./` or `../` paths.
+- Other packages are imported by package name and export, e.g. `@goblin/server-kit`, never by a path into the package folder.
+- The Host never imports a tool package; it reaches tools only through `catalog.json` and Module Federation.
+- A tool package never imports another tool's packages; it may import its own `@goblin/tool-<slug>-*` packages.
+- oxlint enforces the relative-path, Host and cross-tool rules (`no-restricted-imports` in `.oxlintrc.json`, with one override per tool added by `pnpm new-tool`); CSS `@import` is checked in review.
+
+## Tests
+
+- Every package keeps its tests in one `tests/` folder next to `src/`; no other test folders.
+- `*.test.ts` files run with Vitest (`pnpm test`); `*.e2e.ts` files run with Playwright on the full stack (`pnpm test:ui`).
 
 ## Lint and format
 
 | Scope | Lint | Format | Type check | Config |
 | :---- | :---- | :---- | :---- | :---- |
-| `frontend`, `backend`, `tools/*`, `api/` | `pnpm lint` (oxlint) | `pnpm format` (Prettier) | `pnpm typecheck` (`tsc -b`) | `.oxlintrc.json` and the `prettier` key in `package.json`, at the repo root |
+| `host`, `packages/*`, `tools/*` | `pnpm lint` (oxlint) | `pnpm format` (Prettier) | `pnpm typecheck` (`tsc --noEmit` in every package) | `.oxlintrc.json` and the `prettier` key in `package.json`, at the repo root |
 
 - The Claude Code Stop hook (`.claude/settings.json`, script `.claude/hooks/lint_format.py`) runs automatically when the agent finishes a turn: it fixes lint and formatting in every file changed in git, skipping what `.prettierignore` and the oxlint `ignorePatterns` exclude. If lint errors cannot be fixed automatically, the hook hands them back to the agent once, then only reports them to the user.
 - The hook only runs once oxlint and Prettier are installed at the repo root (from Phase 2); before that it does nothing.

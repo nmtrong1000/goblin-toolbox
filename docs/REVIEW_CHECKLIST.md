@@ -29,7 +29,7 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 ### Best practices
 
 - [ ] The remote exposes only `./Tool`.
-- [ ] Shared singletons (`react`, `react-dom`, `react-router`, `i18next`, `react-i18next`, `@goblin/ui-kit`) are declared as singletons and use workspace catalog versions.
+- [ ] The federation config uses `sharedSingletons` and `federationName()` from `@goblin/ui-kit/federation`, with `dts: false`.
 - [ ] The remote's `base` is `/remotes/<slug>/`, and its assets load from there in a production build.
 - [ ] `remoteEntry.js` is not cached long; hashed chunks are cached as immutable.
 - [ ] The Host shows an error state when a remote fails to load, without breaking the shell.
@@ -45,7 +45,10 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 
 ### Best practices
 
-- [ ] Components are small, typed function components; state lives as low as possible.
+- [ ] Code is split per [UI_CONVENTIONS.md](./design/UI_CONVENTIONS.md): each file sits in the right layer (entry, app, page, component, hook, API client, lib) and imports only layers below it.
+- [ ] One component per file, named after the file, with a typed `XxxProps`; files stay under 150 lines.
+- [ ] Components only render props and raise callbacks; fetching and stateful logic live in hooks and `api/`.
+- [ ] State lives as low as possible and is passed down at most two levels.
 - [ ] Effects have correct dependency lists and clean up timers, listeners and in-flight requests (`AbortController`).
 - [ ] Lists use stable keys from the data, not the index.
 - [ ] Loading, empty and error states are handled for every async call.
@@ -60,6 +63,9 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 - Fetching in an effect without handling unmount or a race between requests.
 - Hard-coded UI strings or colors instead of i18n keys and design tokens.
 - Prop drilling across many levels where a context or composition fits.
+- A page or `Tool.tsx` that holds long markup, `fetch` calls or many effects instead of components and hooks.
+- A component that calls `fetch`, reads the router or owns business state.
+- Code moved to `packages/ui-kit` before the Host and two tools use it.
 - Disabling the hooks rules instead of fixing the dependency list.
 
 ## Node.js
@@ -85,7 +91,7 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 - Returning stack traces or internal details to the client.
 - Trusting client input for file paths, URLs or shell arguments.
 - Keeping state in memory and expecting it to survive between requests or instances.
-- Function settings (memory, duration) raised for the whole toolbox instead of one tool's service.
+- Function settings (duration, bundled files) set for the whole toolbox instead of in one tool's service.
 
 ## TypeScript
 

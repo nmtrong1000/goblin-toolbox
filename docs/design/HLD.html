@@ -171,14 +171,15 @@
         <li>
           <strong>Micro-frontends with Module Federation.</strong> The <strong>Host</strong> is the
           only app users open. Each tool's UI is a <strong>remote</strong>: a separate static build
-          that the Host loads at runtime and shows in the tool page. React, React Router, i18next
-          and the UI kit are shared, so they load only once.
+          that the Host loads at runtime and shows in the tool page. React, React Router and i18next
+          are shared, so they load only once.
         </li>
         <li>
           <strong>One microservice per tool.</strong> Each tool's API is its own Express service in
-          its own Vercel Function, with its own memory and time limit. A heavy tool does not slow
-          down or bloat the others. The UI remote calls it with <code>fetch</code> over HTTPS with
-          JSON, through Edge on the same domain (no CORS). Both sides share the tool's Zod schemas.
+          its own Vercel Function, with its own time limit, bundle and bundled files. A heavy tool
+          does not bloat the others or slow their cold starts. The UI remote calls it with
+          <code>fetch</code> over HTTPS with JSON, through Edge on the same domain (no CORS). Both
+          sides share the tool's Zod schemas.
         </li>
         <li>
           <strong>Tool = UI remote + API service.</strong> Both live in one tool package and always
@@ -311,12 +312,12 @@
         <text class="t" x="804" y="254">Tool API Service</text>
         <text class="k" x="804" y="272">[Express · own function]</text>
         <text class="s" x="804" y="292">One per tool, own</text>
-        <text class="s" x="804" y="310">memory and duration</text>
+        <text class="s" x="804" y="310">duration and bundle</text>
 
-        <rect class="b" x="540" y="410" width="190" height="84" rx="8" />
-        <text class="t" x="554" y="436">Scheduled Jobs</text>
-        <text class="k" x="554" y="454">[Vercel Cron]</text>
-        <text class="s" x="554" y="474">Bearer CRON_SECRET</text>
+        <rect class="x" x="560" y="590" width="180" height="84" rx="8" />
+        <text class="t" x="574" y="616">Scheduled Jobs</text>
+        <text class="k" x="574" y="634">[Vercel Cron · platform]</text>
+        <text class="s" x="574" y="654">Bearer CRON_SECRET</text>
 
         <rect class="x" x="790" y="580" width="165" height="96" rx="8" />
         <text class="t" x="804" y="606">Tool Dependencies</text>
@@ -345,8 +346,8 @@
         <text class="l" x="766" y="294" text-anchor="middle">HTTPS</text>
         <text class="l" x="766" y="308" text-anchor="middle">JSON</text>
 
-        <line class="e" x1="730" y1="440" x2="840" y2="338" />
-        <text class="l" x="752" y="470">GET /api/cron/&lt;slug&gt;-&lt;job&gt;</text>
+        <line class="e" x1="700" y1="590" x2="830" y2="338" />
+        <text class="l" x="560" y="572">GET /api/cron/&lt;slug&gt;-&lt;job&gt;</text>
         <line class="e" x1="900" y1="338" x2="900" y2="578" />
         <text class="l" x="892" y="548" text-anchor="end">reads, writes</text>
 
@@ -411,7 +412,7 @@
         <text class="t" x="684" y="276">Shared Deps</text>
         <text class="k" x="684" y="294">[MF share scope, singletons]</text>
         <text class="s" x="684" y="314">react, react-dom,</text>
-        <text class="s" x="684" y="332">router, i18next, ui-kit</text>
+        <text class="s" x="684" y="332">router, i18next</text>
 
         <rect class="b" x="460" y="420" width="170" height="96" rx="8" />
         <text class="t" x="474" y="446">catalog.json</text>
@@ -487,8 +488,8 @@
         <rect class="x" x="30" y="250" width="170" height="96" rx="8" />
         <text class="t" x="44" y="276">Shared Deps</text>
         <text class="k" x="44" y="294">[Host share scope]</text>
-        <text class="s" x="44" y="314">react, router, i18next,</text>
-        <text class="s" x="44" y="332">ui-kit</text>
+        <text class="s" x="44" y="314">react, router,</text>
+        <text class="s" x="44" y="332">i18next</text>
 
         <rect class="b acc" x="250" y="80" width="170" height="96" rx="8" />
         <text class="t" x="264" y="106">remoteEntry.js</text>
@@ -575,8 +576,8 @@
         <rect class="b acc" x="240" y="80" width="150" height="96" rx="8" />
         <text class="t" x="254" y="106">Function Entry</text>
         <text class="k" x="254" y="124">[service entrypoint]</text>
-        <text class="s" x="254" y="144">own memory and</text>
-        <text class="s" x="254" y="162">duration settings</text>
+        <text class="s" x="254" y="144">own duration and</text>
+        <text class="s" x="254" y="162">bundled files</text>
 
         <rect class="b" x="420" y="80" width="150" height="96" rx="8" />
         <text class="t" x="434" y="106">App Factory</text>
@@ -732,8 +733,8 @@
           <tr>
             <td>Runtime resources</td>
             <td>
-              Each tool API has its own memory, duration and bundle; a heavy tool does not slow or
-              bloat light ones.
+              Each tool API has its own duration, bundle and bundled files; a heavy tool does not
+              bloat light ones. Memory is not per tool: 2 GB on Hobby, one size per project on Pro.
             </td>
             <td>2N + 1 services; the route table and total build time grow with every tool.</td>
           </tr>
@@ -749,7 +750,7 @@
           </tr>
           <tr>
             <td>Shared dependencies</td>
-            <td>React, router, i18next and the UI kit are loaded once and shared.</td>
+            <td>React, router and i18next are loaded once and shared.</td>
             <td>Upgrading any of them means upgrading the Host and every remote together.</td>
           </tr>
           <tr>

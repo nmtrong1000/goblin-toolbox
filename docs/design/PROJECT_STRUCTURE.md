@@ -9,8 +9,10 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 ├── vercel.json              # Vercel Services: one entry per service, public route table, crons
 ├── host/                    # Host service: static Vite SPA, the only app users open
 ├── packages/
-│   ├── ui-kit/              # design tokens and shared React components, shared with remotes
+│   ├── ui-kit/              # design tokens and the Module Federation settings shared by Host and remotes
 │   └── server-kit/          # Express app factory, middleware, error format for tool APIs
+├── scripts/
+│   └── new-tool.mjs         # pnpm new-tool <slug>: creates a tool and registers its services
 ├── tools/
 │   └── <slug>/              # one tool: UI remote + API service + its own docs
 └── docs/
@@ -21,7 +23,7 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 
 | Folder | Becomes | Routed at |
 |---|---|---|
-| `host/` | Host service (static) | `/`, `/vaults/*`, `/tools/*`, `/catalog.json` |
+| `host/` | Host service (static) | `/`, `/vaults/*`, `/tools/*`, `/catalog.json`, `/contracts/<slug>.html` |
 | `tools/<slug>/ui/` | Tool UI Remote service (static) | `/remotes/<slug>/*` |
 | `tools/<slug>/api/` | Tool API Service (one Vercel Function) | `/api/tools/<slug>/*`, `/api/cron/<slug>-*` |
 | `packages/*` | Not deployed; bundled into the services that use them | — |
@@ -31,13 +33,18 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 ```text
 host/
 ├── catalog.config.json      # vaults, which tool belongs to which vault, order
-├── scripts/build-catalog    # merges tool manifests + catalog.config.json into catalog.json
-└── src/
-    ├── app/                 # shell, routes, pages (home search, vault, tool page)
-    ├── federation/          # Remote Loader and shared-dependency setup
-    ├── catalog/             # loads catalog.json
-    ├── i18n/                # shell strings and the shared i18next instance
-    └── styles/
+├── scripts/
+│   ├── build-catalog        # merges tool manifests + catalog.config.json into catalog.json
+│   └── generate-contracts   # renders each tool's openapi.yaml to public/contracts/<slug>.html
+├── src/                     # layout inside src/: UI_CONVENTIONS.md
+│   ├── app/                 # route table and layout
+│   ├── pages/               # home search, vault, tool page, not found
+│   ├── components/          # UI used by several pages
+│   ├── catalog/             # loads catalog.json, search
+│   ├── federation/          # Remote Loader
+│   ├── i18n/                # shell strings and the shared i18next instance
+│   └── styles/
+└── tests/                   # *.test.ts (Vitest), *.e2e.ts (Playwright)
 ```
 
 The Host never imports a tool. It knows a tool only through `catalog.json`.
@@ -49,28 +56,29 @@ tools/<slug>/
 ├── README.md                # the tool's requirements
 ├── manifest.json            # slug, names (en, vi), keywords, remote URL
 ├── docs/                    # tool design, decisions, spikes, openapi.yaml
-├── shared/                  # code used by both ui/ and api/, e.g. request schemas
+├── shared/                  # only code that both ui/ and api/ use
 ├── ui/                      # Tool UI Remote
 │   ├── vite.config.ts       # base /remotes/<slug>/, exposes ./Tool, shared singletons
-│   └── src/
-│       ├── Tool.tsx         # exposed entry the Host mounts
-│       ├── components/
-│       ├── api-client/      # calls /api/tools/<slug>, maps error codes to i18n
-│       └── i18n/            # en, vi
+│   ├── src/                 # layout inside src/: UI_CONVENTIONS.md
+│   │   ├── Tool.tsx         # exposed entry the Host mounts; renders pages/ToolPage.tsx
+│   │   └── i18n/            # en, vi
+│   └── tests/               # *.test.ts (Vitest), *.e2e.ts (Playwright)
 └── api/                     # Tool API Service
-    └── src/
-        ├── index.ts         # service entry: createApp() from server-kit with this tool's routers
-        ├── routes/          # HTTP layer: tool and cron routers, Zod validation, error mapping
-        ├── services/        # business logic; never imports Express
-        └── integrations/    # external systems: Blob, browsers, outbound HTTP
+    ├── src/
+    │   ├── index.ts         # service entrypoint in vercel.json: createApp() from server-kit
+    │   ├── dev-server.ts    # local runner used by vercel dev
+    │   ├── routes/          # HTTP layer: tool and cron routers, Zod validation, error mapping
+    │   ├── services/        # business logic; never imports Express
+    │   └── integrations/    # external systems: Blob, browsers, outbound HTTP
+    └── tests/               # *.test.ts (Vitest)
 ```
 
-- A tool owns everything it needs: dependencies, function settings (memory, duration, bundled files), env vars and cron jobs. They are declared in the tool's `README.md` and the tool's service entry in `vercel.json`.
+- A tool owns everything it needs: dependencies, function settings (duration, bundled files), env vars and cron jobs. They are declared in the tool's `README.md` and the tool's service entry in `vercel.json`.
 - A tool never imports another tool. Code needed by more than one tool goes into `packages/`.
 - `ui/` and `api/` are separate services but one tool: they are always changed and reviewed together.
 
 ## Adding a tool
 
-1. Create `tools/<slug>/` with the layout above.
-2. Add its UI and API services and their routes to `vercel.json`.
+1. `pnpm new-tool <slug>` creates `tools/<slug>/` with the layout above, adds its UI and API services and routes to `vercel.json`, and adds its lint override to `.oxlintrc.json`.
+2. `pnpm install`.
 3. Add the tool to a vault in `host/catalog.config.json`.
