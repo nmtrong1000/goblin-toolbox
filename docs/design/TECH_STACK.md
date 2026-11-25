@@ -7,9 +7,10 @@ Shared by every tool. *Verified* means it ran in spike 0001; the remaining choic
 | Area | Choice | Notes |
 |---|---|---|---|
 | Node.js | Node.js | Runtime for the app and API |
-| Hosting | Vercel Hobby | CDN, one Function, Cron, WAF; storage per tool |
-| Language | TypeScript | `tsc -b` checked in Phase 2 |
-| Package manager | pnpm workspaces | `frontend`, `backend`, `tools/*` |
+| Hosting | Vercel Hobby, Vercel Services (beta) | One project: static Host and tool remotes, one function per tool API, Cron, WAF; storage per tool |
+| Language | TypeScript 7 | `tsc --noEmit` per package; 7 is the first version that resolves `#/` subpath imports |
+| Package manager | pnpm workspaces + catalog | `host`, `packages/*`, `tools/*/{ui,api,shared}`; shared versions in the `catalog:` of `pnpm-workspace.yaml` |
+| Local dev | Vercel CLI (`vercel dev`) | Pinned as a root dev dependency; runs every service locally |
 
 ## Frontend
 
@@ -18,13 +19,14 @@ Shared by every tool. *Verified* means it ran in spike 0001; the remaining choic
 | UI | React |
 | Build | Vite |
 | Routing | React Router |
+| Micro-frontends | Module Federation (`@module-federation/vite`, `@module-federation/runtime`) |
 | i18n | i18next + react-i18next |
 
 ## Backend
 
 | Area | Choice |
 |---|---|
-| HTTP | Express | *verified* |
+| HTTP | Express, through `@goblin/server-kit` | *verified* |
 | Schema validation | Zod |
 
 ## Quality and tests

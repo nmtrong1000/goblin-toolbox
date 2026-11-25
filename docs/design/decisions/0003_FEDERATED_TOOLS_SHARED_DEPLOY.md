@@ -12,8 +12,8 @@ Tools should be self-contained units, and the toolbox should not change when a t
 ## Decision
 
 - **Host:** one static Vite SPA owns the shell, search, vault pages, i18n and the shared dependencies. Users only open Host pages.
-- **Tool UI Remote:** each tool builds its UI as a static Module Federation remote at `/remotes/<slug>/`. The Host loads it at runtime and mounts its exposed `./Tool` component. React, React Router, i18next and the UI kit are shared singletons provided by the Host.
-- **Tool API Service:** each tool runs its API as its own Express service in its own Vercel Function at `/api/tools/<slug>/`, with its own memory, duration, bundled files and cron routes. Shared middleware lives in `@goblin/server-kit`.
+- **Tool UI Remote:** each tool builds its UI as a static Module Federation remote at `/remotes/<slug>/`. The Host loads it at runtime and mounts its exposed `./Tool` component. React, React Router and i18next are shared singletons provided by the Host; `@goblin/ui-kit` holds the design tokens and the shared federation settings.
+- **Tool API Service:** each tool runs its API as its own Express service in its own Vercel Function at `/api/tools/<slug>/`, with its own duration, bundled files and cron routes. Shared middleware lives in `@goblin/server-kit`.
 - **Catalog:** each tool declares a manifest; vault membership is kept in the Host's vault config. Both are merged into a static `catalog.json` at build time. No catalog backend and no admin dashboard.
 - **Deployment:** for now everything is in one Vercel project using Vercel Services and ships in one deployment. A tool's UI remote and API service are grouped as one tool package so that the tool can later move to its own project and deploy independently.
 
@@ -25,10 +25,10 @@ Tools should be self-contained units, and the toolbox should not change when a t
 
 ## Consequences
 
-- Each tool API gets its own function settings; a heavy tool no longer sets limits for light ones.
-- Adding a tool needs only its package, its manifest and one vault-config entry; the Host's code does not change.
+- Each tool API gets its own duration, bundle and bundled files; a heavy tool no longer bloats light ones. Memory stays shared: Hobby runs every function at 2 GB / 1 vCPU and Pro sets one size per project, as measured in spike 0002.
+- Adding a tool needs its packages, its manifest, its services in `vercel.json` and one vault-config entry; `pnpm new-tool` creates all but the vault entry. The Host's code does not change.
 - Host, remotes and APIs always roll back together, so the NFR rollback requirement stays as it is.
 - Module Federation's independent deploys are not used yet; the cost is paid now for a clean boundary and an easy split later.
 - Shared dependency versions must match between the Host and every remote; mismatches show up at runtime.
 - Opening a tool needs two extra requests (`catalog.json`, `remoteEntry.js`).
-- Vercel Services is in beta. A spike must confirm Hobby limits, pnpm workspace builds per service, Module Federation with the shared singletons, and local development before migration starts. If Services fails, fall back to one project without Services and one function per tool.
+- Vercel Services is in beta. [Spike 0002](../spikes/0002_SERVICES_AND_MODULE_FEDERATION.md) confirmed routing, per-service builds with pnpm workspaces, per-service `maxDuration`, Module Federation singletons and local development, so the fallback is not needed.

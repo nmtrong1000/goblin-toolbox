@@ -1,0 +1,32 @@
+{
+  "name": "@goblin/tool-markdown-to-pdf-api",
+  "private": true,
+  "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
+  "scripts": {
+    "build": "pnpm --filter @goblin/tool-markdown-to-pdf-shared build && rm -rf assets && cp -R ../shared/assets assets",
+    "dev": "LOCAL_PDF_OUTPUT=1 tsx watch src/dev-server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@goblin/server-kit": "workspace:*",
+    "@goblin/tool-markdown-to-pdf-shared": "workspace:*",
+    "@sparticuz/chromium": "^153.0.0",
+    "@vercel/blob": "^2.9.0",
+    "express": "catalog:",
+    "ipaddr.js": "^2.5.0",
+    "puppeteer-core": "^25.18.1",
+    "undici": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/express": "catalog:",
+    "@types/pngjs": "^6.0.5",
+    "@types/supertest": "catalog:",
+    "pixelmatch": "^8.0.0",
+    "pngjs": "^7.0.0",
+    "supertest": "catalog:",
+    "tsx": "catalog:"
+  }
+}

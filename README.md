@@ -16,9 +16,10 @@ The MVP has one tool: **Markdown to PDF**.
 | Topic | Where |
 |---|---|
 | Shared non-functional requirements | [docs/design/NFR.md](docs/design/NFR.md) |
-| Phase plans | [P1](docs/phases/P1_DESIGN.md), [P2](docs/phases/P2_SCAFFOLD_AND_DEPLOY.md), [P3](docs/phases/P3_BUILD_MARKDOWN_TO_PDF.md), [P4](docs/phases/P4_DEPLOY_TOOL.md) |
+| Phase plans | [P1](docs/phases/P1_DESIGN.md), [P2](docs/phases/P2_SCAFFOLD_AND_DEPLOY.md), [P3](docs/phases/P3_BUILD_MARKDOWN_TO_PDF.md), [P4](docs/phases/P4_DEPLOY_TOOL.md), [P5](docs/phases/P5_FEDERATED_TOOLS.md) |
 | How each phase runs | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
-| Toolbox design | [docs/design/HLD.html](docs/design/HLD.html) |
+| Toolbox design | [docs/design/HLD.html](docs/design/HLD.html), [docs/design/PROJECT_STRUCTURE.md](docs/design/PROJECT_STRUCTURE.md) |
+| What a tool must provide | [docs/design/TOOL_CONTRACT.md](docs/design/TOOL_CONTRACT.md) |
 | Shared visual design system | [docs/design/DESIGN.md](docs/design/DESIGN.md) |
 | Tool requirements | `tools/<slug>/README.md`, e.g. [Markdown to PDF](tools/markdown-to-pdf/README.md) |
 | Tool documents | `tools/<slug>/docs/`, e.g. `tools/markdown-to-pdf/docs/` |
@@ -33,16 +34,20 @@ The MVP has one tool: **Markdown to PDF**.
 ```sh
 corepack enable
 pnpm install
-pnpm dev
+pnpm start
 ```
 
-The frontend runs at <http://localhost:5173>. Vite proxies `/api/*` to the Express server on port 3000. The health endpoint is available at <http://localhost:5173/api/health>.
+`pnpm start` runs `vercel dev --local`, which starts every service in `vercel.json` (the Host, each tool's UI remote and API service) behind one address: <http://localhost:5173>. Each API service has its own health endpoint, e.g. <http://localhost:5173/api/tools/markdown-to-pdf/health>.
 
-To check the production build locally:
+API contracts are rendered from each tool's `docs/openapi.yaml` to <http://localhost:5173/contracts/markdown-to-pdf.html> (one page per tool, also on every deployment). The Host's dev and build scripts generate them; run `pnpm generate-contracts` to refresh them by hand.
+
+`pnpm build` builds every service. Run `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test` and `pnpm test:ui` before opening a pull request.
+
+## Adding a tool
 
 ```sh
-pnpm build
-pnpm preview
+pnpm new-tool <slug>
+pnpm install
 ```
 
-Vite preview runs at <http://localhost:4173> and keeps the API proxy enabled. Run `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, and `pnpm test` before opening a pull request.
+The script creates `tools/<slug>/` per [docs/design/TOOL_CONTRACT.md](docs/design/TOOL_CONTRACT.md) and adds its services to `vercel.json`. Then add the tool to a vault in `host/catalog.config.json`.

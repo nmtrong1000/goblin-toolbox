@@ -1,0 +1,13 @@
+{
+  "vaults": [
+    {
+      "slug": "document-tools",
+      "name": { "en": "Document Tools", "vi": "Công cụ tài liệu" },
+      "description": {
+        "en": "Tools for creating and converting documents.",
+        "vi": "Công cụ tạo và chuyển đổi tài liệu."
+      },
+      "tools": ["markdown-to-pdf"]
+    }
+  ]
+}

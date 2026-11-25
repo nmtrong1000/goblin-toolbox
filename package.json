@@ -6,26 +6,24 @@
     "node": "26.x"
   },
   "scripts": {
-    "dev": "concurrently -k -n api,web -c blue,green \"pnpm --filter @goblin/api dev\" \"pnpm --filter @goblin/web dev\"",
-    "build": "pnpm exec tsc -b tools/markdown-to-pdf --force && pnpm --filter @goblin/tool-markdown-to-pdf build:renderer && pnpm --filter @goblin/api build && pnpm --filter @goblin/web build",
-    "preview": "concurrently -k -n api,web -c blue,green \"pnpm --filter @goblin/api dev\" \"pnpm --filter @goblin/web preview\"",
+    "start": "vercel dev --local --listen 5173",
+    "build": "pnpm -r --if-present build",
     "lint": "oxlint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc -b",
-    "test": "pnpm --filter @goblin/tool-markdown-to-pdf build:renderer && vitest run --no-file-parallelism --exclude '**/ui-test/**'",
-    "test:ui": "playwright test"
-  },
-  "dependencies": {
-    "@goblin/api": "workspace:*"
+    "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm --filter \"./tools/*/shared\" --if-present build && vitest run --no-file-parallelism",
+    "test:ui": "playwright test",
+    "new-tool": "node scripts/new-tool.mjs",
+    "generate-contracts": "pnpm --filter @goblin/host generate-contracts"
   },
   "devDependencies": {
     "@playwright/test": "^1.65.1",
     "@types/node": "^22.15.30",
-    "concurrently": "^9.1.2",
     "oxlint": "^1.15.0",
     "prettier": "^3.5.3",
-    "typescript": "^5.8.3",
+    "typescript": "^7.0.2",
+    "vercel": "66.6.0",
     "vitest": "^3.2.4"
   },
   "prettier": {
