@@ -10,7 +10,7 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 - [ ] Requirement docs (`README.md`, `NFR.md`, `tools/<slug>/README.md`, `docs/phases/`) are updated in the same change.
 - [ ] Design docs in `docs/design/` and the tool's `openapi.yaml` match the code.
 - [ ] A new tool or a changed tool still meets [TOOL_CONTRACT.md](./design/TOOL_CONTRACT.md).
-- [ ] File and folder names follow [WORKFLOW.md](./WORKFLOW.md), section "File and folder naming", including what lint does not check: Markdown, HTML, served files, folders and acronyms.
+- [ ] File and folder names follow [CODE_CONVENTIONS.md](./conventions/CODE_CONVENTIONS.md), section "File and folder naming", including what lint does not check: Markdown, HTML, served files, folders and acronyms.
 - [ ] Comments follow the comment rules: one header block, English, only "why" or "watch out".
 - [ ] System messages are English; UI text goes through i18n in `en` and `vi`.
 - [ ] `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test` and `pnpm build` pass.
@@ -46,7 +46,7 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 
 ### Best practices
 
-- [ ] Code is split per [UI_CONVENTIONS.md](./design/UI_CONVENTIONS.md): each file sits in the right layer (entry, app, page, component, hook, API client, lib) and imports only layers below it.
+- [ ] Code is split per [UI_CONVENTIONS.md](./conventions/UI_CONVENTIONS.md): each file sits in the right layer (entry, app, page, component, hook, API client, lib) and imports only layers below it.
 - [ ] One component per file, named after the file, with a typed `XxxProps`; files stay under 150 lines.
 - [ ] Components only render props and raise callbacks; fetching and stateful logic live in hooks and `api/`.
 - [ ] State lives as low as possible and is passed down at most two levels.

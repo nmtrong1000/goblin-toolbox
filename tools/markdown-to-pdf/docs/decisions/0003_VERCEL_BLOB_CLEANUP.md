@@ -1,7 +1,10 @@
-# Markdown to PDF ADR 0003: PDFs on Vercel Blob with our own 1-hour cleanup
+---
+id: markdown-to-pdf-adr-0003
+status: accepted
+date: 2026-11-21
+---
 
-- **Status:** accepted
-- **Date:** 2026-11-21
+# Markdown to PDF ADR 0003: PDFs on Vercel Blob with our own 1-hour cleanup
 
 ## Context
 

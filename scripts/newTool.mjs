@@ -1,6 +1,6 @@
 /*
  * Usage: pnpm new-tool <slug>
- * Creates tools/<slug>/ per docs/design/TOOL_CONTRACT.md and docs/design/UI_CONVENTIONS.md
+ * Creates tools/<slug>/ per docs/design/TOOL_CONTRACT.md and docs/conventions/UI_CONVENTIONS.md
  * (manifest, ui/ remote, api/ service, i18n, tests, README, openapi.yaml), adds the tool's two
  * services and routes to vercel.json and its own lint override to .oxlintrc.json. Putting the tool in a vault stays a manual choice in
  * host/catalog.config.json; until then the catalog leaves the tool out.

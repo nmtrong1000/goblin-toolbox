@@ -1,6 +1,6 @@
 # API conventions
 
-Rules for every tool's API service and for the code that calls it. The architecture is in [HLD.html](./HLD.html), what else a tool must provide in [TOOL_CONTRACT.md](./TOOL_CONTRACT.md). What REVIEW checks is in [REVIEW_CHECKLIST.md](../REVIEW_CHECKLIST.md).
+Rules for every tool's API service and for the code that calls it.
 
 ## Service
 
@@ -57,7 +57,7 @@ Answers from the platform, without the JSON body; clients must handle them:
 
 - Cron routes use `requireCronSecret` from server-kit: `Authorization: Bearer $CRON_SECRET`, otherwise `401`.
 - CORS is never opened to `*`. The UI calls its API on the same domain, so no CORS is needed.
-- Rate limit per IP with Vercel WAF on `/api/*` ([ADR 0002](./decisions/0002_RATE_LIMIT_VERCEL_WAF.md)). A tool may add a stricter rule; its thresholds are set in the phase that builds it. Current rules are in [DEPLOY_RUNBOOK.md](../DEPLOY_RUNBOOK.md).
+- Rate limit per IP with Vercel WAF on `/api/*` ([ADR 0002](../design/decisions/0002_RATE_LIMIT_VERCEL_WAF.md)). A tool may add a stricter rule; its thresholds are set in the phase that builds it. Current rules are in [DEPLOY_RUNBOOK.md](../DEPLOY_RUNBOOK.md).
 - Outbound requests have timeouts and size limits; user-provided URLs go through the SSRF guard.
 
 ## Logging

@@ -1,7 +1,10 @@
-# Markdown to PDF ADR 0002: One Markdown Renderer for preview and PDF
+---
+id: markdown-to-pdf-adr-0002
+status: accepted
+date: 2026-11-21
+---
 
-- **Status:** accepted
-- **Date:** 2026-11-21
+# Markdown to PDF ADR 0002: One Markdown Renderer for preview and PDF
 
 ## Context
 

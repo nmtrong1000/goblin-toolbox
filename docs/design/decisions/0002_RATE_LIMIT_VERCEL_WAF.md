@@ -1,7 +1,10 @@
-# ADR 0002: Rate limiting with Vercel WAF
+---
+id: adr-0002
+status: accepted
+date: 2026-11-21
+---
 
-- **Status:** accepted
-- **Date:** 2026-11-21
+# ADR 0002: Rate limiting with Vercel WAF
 
 ## Context
 

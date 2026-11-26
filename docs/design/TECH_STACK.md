@@ -1,11 +1,11 @@
 # Tech stack: toolbox
 
-Shared by every tool. *Verified* means it ran in spike 0001; the remaining choices are verified when first installed in Phase 2. A tool that adds libraries declares them in its own `tools/<slug>/package.json` and lists them in `tools/<slug>/docs/TECH_STACK.md`.
+Shared by every tool. *Verified* means it ran in [spike 0001](../../tools/markdown-to-pdf/docs/spikes/0001_CHROMIUM_ON_VERCEL.md). A tool that adds libraries declares them in its own `tools/<slug>/package.json` and lists them in `tools/<slug>/docs/TECH_STACK.md`.
 
 ## Runtime and platform
 
 | Area | Choice | Notes |
-|---|---|---|---|
+|---|---|---|
 | Node.js | Node.js | Runtime for the app and API |
 | Hosting | Vercel Hobby, Vercel Services (beta) | One project: static Host and tool remotes, one function per tool API, Cron, WAF; storage per tool |
 | Language | TypeScript 7 | `tsc --noEmit` per package; 7 is the first version that resolves `#/` subpath imports |
@@ -24,10 +24,10 @@ Shared by every tool. *Verified* means it ran in spike 0001; the remaining choic
 
 ## Backend
 
-| Area | Choice |
-|---|---|
+| Area | Choice | Notes |
+|---|---|---|
 | HTTP | Express, through `@goblin/server-kit` | *verified* |
-| Schema validation | Zod |
+| Schema validation | Zod | |
 
 ## Quality and tests
 

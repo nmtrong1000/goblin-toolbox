@@ -12,5 +12,4 @@ These apply to every tool. Each tool records additional non-functional requireme
 | Observability | Vercel logs; structured logs, one line per request. |
 | Source control and CI/CD | Git repo on GitHub. GitHub Actions runs lint, type check, test and build on every PR. Vercel Git integration: every PR gets a preview deployment, `main` deploys to production. |
 | Rollback | Vercel Instant Rollback; the Host, every tool remote and every tool API share one deployment, so they roll back together. |
-| API | Validation, errors, rate limit and logging follow [API_CONVENTIONS.md](./API_CONVENTIONS.md). |
 | Cost | Stay within Hobby limits. Upgrade to Pro when commercial use is needed or limits are hit two months in a row. |

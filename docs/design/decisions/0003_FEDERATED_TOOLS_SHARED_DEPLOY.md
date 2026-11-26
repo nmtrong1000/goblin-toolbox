@@ -1,7 +1,10 @@
-# ADR 0003: Tools as federated UI remotes and API services, deployed together
+---
+id: adr-0003
+status: accepted
+date: 2026-11-24
+---
 
-- **Status:** accepted
-- **Date:** 2026-11-24
+# ADR 0003: Tools as federated UI remotes and API services, deployed together
 
 ## Context
 

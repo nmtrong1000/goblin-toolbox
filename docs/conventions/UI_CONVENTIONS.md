@@ -1,6 +1,6 @@
 # UI conventions
 
-How React code is split into files and folders in the Host and in every Tool UI Remote. The repo layout above `src/` is in [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md); what a remote must expose is in [TOOL_CONTRACT.md](./TOOL_CONTRACT.md).
+How React code is split into files and folders in the Host and in every Tool UI Remote. The repo layout above `src/` is in [PROJECT_STRUCTURE.md](../design/PROJECT_STRUCTURE.md); what a remote must expose is in [TOOL_CONTRACT.md](../design/TOOL_CONTRACT.md).
 
 ## Layers
 
@@ -39,7 +39,7 @@ host/src/                          tools/<slug>/ui/src/
 
 ## Files and names
 
-File and folder names follow [WORKFLOW.md](../WORKFLOW.md), section "File and folder naming". For UI code:
+File and folder names follow [CODE_CONVENTIONS.md](./CODE_CONVENTIONS.md), section "File and folder naming". For UI code:
 
 | Kind | File name | Export |
 |---|---|---|

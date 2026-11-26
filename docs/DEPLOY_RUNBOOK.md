@@ -24,8 +24,7 @@ pnpm start
 
 `pnpm start` runs `vercel dev --local`: every service in `vercel.json` behind <http://localhost:5173>, with reload on change. No Vercel login or environment variables are needed. The Host's dev command generates `catalog.json` and the contract pages before starting Vite.
 
-- PDF rendering uses the local Google Chrome; set `LOCAL_CHROME_PATH` if it is not in the default location.
-- The API service's dev script sets `LOCAL_PDF_OUTPUT=1`, so **Create PDF** downloads the file directly instead of uploading it to Blob.
+- A tool's own local setup (local binaries, dev-only variables) is in its `tools/<slug>/README.md`, section "Operations".
 - `pnpm test` runs unit tests; `pnpm test:ui` runs Playwright against the local stack and starts it if it is not running.
 
 ## Deploy
@@ -43,32 +42,23 @@ pnpm start
 
 Set them in **Vercel → Project → Settings → Environment Variables**, then redeploy so functions receive the new values. Never commit `.env.local` or values copied from Vercel. Pull values for local use with `vercel env pull .env.local`.
 
-| Variable | Used by | Environments | Notes |
-|---|---|---|---|
-| `BLOB_STORE_ID` | `markdown-to-pdf-api` | Production, Preview, Development | Vercel Blob store; Vercel injects `VERCEL_OIDC_TOKEN` for access, so no static token is needed on Vercel |
-| `CRON_SECRET` | `markdown-to-pdf-api` | Production | Sensitive; the cron route rejects calls without it |
-| `BLOB_READ_WRITE_TOKEN` | `markdown-to-pdf-api` | Local only, optional | Only to test real Blob uploads locally |
-| `LOCAL_CHROME_PATH` | `markdown-to-pdf-api` | Local only, optional | Chrome executable for local rendering |
-
-`BLOB_WEBHOOK_PUBLIC_KEY` is added by the Blob integration and is not read by the code. Each tool lists its own variables, function settings and cron jobs in `tools/<slug>/README.md`.
+Each tool lists its own variables, with the environments they are set in, in its `tools/<slug>/README.md`, section "Operations". Integrations may add variables the code does not read.
 
 ## Functions
 
-- Function settings live on the tool's API service in `vercel.json` (`functions`): Markdown to PDF uses `maxDuration` 60 seconds and bundles its renderer assets with `includeFiles`.
+- Function settings live on the tool's API service in `vercel.json` (`functions`), e.g. `maxDuration` and `includeFiles`; each tool lists its values in its README.
 - On the Hobby plan memory is fixed at 2048 MB and 1 vCPU and cannot be set per service.
-- Each API service has a health route, described in [API_CONVENTIONS.md](./design/API_CONVENTIONS.md).
+- Each API service has a health route, described in [API_CONVENTIONS.md](./conventions/API_CONVENTIONS.md).
 
 ## Cron jobs
 
 Cron jobs are declared in `vercel.json` (`crons`) by the tool that needs them and run on production only.
 
-| Path | Schedule | Purpose |
-|---|---|---|
-| `/api/cron/markdown-to-pdf-cleanup` | `0 3 * * *` (03:00 UTC) | Delete expired PDFs from Blob |
+Each tool lists its cron jobs (path, schedule, purpose) in its README.
 
 - List: `vercel crons ls`.
-- Run now: `vercel crons run /api/cron/markdown-to-pdf-cleanup`, or **Run** in **Vercel → Project → Settings → Cron Jobs**.
-- Vercel sends `Authorization: Bearer $CRON_SECRET`; how the route checks it is in [API_CONVENTIONS.md](./design/API_CONVENTIONS.md).
+- Run now: `vercel crons run /api/cron/<slug>-<job>`, or **Run** in **Vercel → Project → Settings → Cron Jobs**.
+- Vercel sends `Authorization: Bearer $CRON_SECRET`; without it the route returns `401`.
 
 ## Caching and firewall
 
@@ -77,7 +67,7 @@ Cron jobs are declared in `vercel.json` (`crons`) by the tool that needs them an
 
 ## Logs
 
-- **Vercel → Project → Logs**, or `vercel logs --deployment <url>`. Filter by service, e.g. `markdown-to-pdf-api`.
+- **Vercel → Project → Logs**, or `vercel logs --deployment <url>`. Filter by service, e.g. `<slug>-api`.
 - Every API log line is JSON with the request ID, method, path, status and duration; the `x-request-id` response header gives the ID of a request. Request and response bodies are never logged.
 
 ## Rollback

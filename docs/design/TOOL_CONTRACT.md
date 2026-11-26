@@ -1,6 +1,6 @@
 # Tool contract
 
-What every tool must provide so the Host can show it and Vercel can run it. The architecture is in [HLD.html](./HLD.html), the folder layout in [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md), API rules in [API_CONVENTIONS.md](./API_CONVENTIONS.md). A tool that meets this contract is added without changing Host code.
+What every tool must provide so the Host can show it and Vercel can run it. The architecture is in [HLD.html](./HLD.html), the folder layout in [PROJECT_STRUCTURE.md](./PROJECT_STRUCTURE.md). A tool that meets this contract is added without changing Host code.
 
 ## Identity
 
@@ -32,7 +32,7 @@ What every tool must provide so the Host can show it and Vercel can run it. The 
 |---|---|
 | Build | Static Vite build with Module Federation, served at `/remotes/<slug>/` (`base` set to that path) |
 | Exposes | Exactly one module, `./Tool`: a React component with no required props |
-| Code layout | `src/` follows [UI_CONVENTIONS.md](./UI_CONVENTIONS.md): `Tool.tsx` only wires i18n and styles and renders `pages/ToolPage.tsx` |
+| Code layout | `src/` follows [UI_CONVENTIONS.md](../conventions/UI_CONVENTIONS.md): `Tool.tsx` only wires i18n and styles and renders `pages/ToolPage.tsx` |
 | Federation name | The slug with `-` replaced by `_` (`federationName()` in `@goblin/ui-kit/federation`) |
 | Shared singletons | `sharedSingletons` from `@goblin/ui-kit/federation`: `react`, `react-dom`, `react-router-dom`, `i18next`, `react-i18next`, all from the Host; versions come from the workspace catalog |
 | Routing | Renders inside the Host's `/tools/<slug>` page; may use nested routes under it, never routes outside it |
@@ -41,7 +41,7 @@ What every tool must provide so the Host can show it and Vercel can run it. The 
 
 ## API service
 
-The API service, how the UI calls it and its `openapi.yaml` follow [API_CONVENTIONS.md](./API_CONVENTIONS.md).
+The API service, how the UI calls it and its `openapi.yaml` follow [API_CONVENTIONS.md](../conventions/API_CONVENTIONS.md).
 
 ## Shared code
 
@@ -54,7 +54,7 @@ The API service, how the UI calls it and its `openapi.yaml` follow [API_CONVENTI
 |---|---|
 | Requirements, tool NFRs, env vars, function settings | `tools/<slug>/README.md` |
 | Design, decisions, spikes | `tools/<slug>/docs/` |
-| API description | `tools/<slug>/docs/openapi.yaml`, per [API_CONVENTIONS.md](./API_CONVENTIONS.md) |
+| API description | `tools/<slug>/docs/openapi.yaml` |
 | Unit and API tests | `tests/*.test.ts` in `ui/`, `api/` and `shared/`, run by `pnpm test` (Vitest) |
 | i18n key parity between `en` and `vi` | `ui/tests/i18n.test.ts` |
 | UI flow test | `ui/tests/*.e2e.ts`, run by `pnpm test:ui` (Playwright) with the Host, the remote and the API running together |

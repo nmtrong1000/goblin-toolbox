@@ -17,6 +17,7 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 │   └── <slug>/              # one tool: UI remote + API service + its own docs
 └── docs/
     ├── WORKFLOW.md          # phase process
+    ├── conventions/         # code, API and UI conventions
     ├── phases/              # scope and tasks of each phase
     └── design/              # toolbox-wide design: HLD, NFR, visual design, decisions
 ```
@@ -36,7 +37,7 @@ host/
 ├── scripts/
 │   ├── buildCatalog.mjs     # merges tool manifests + catalog.config.json into catalog.json
 │   └── generateContracts.mjs # renders each tool's openapi.yaml to public/contracts/<slug>.html
-├── src/                     # layout inside src/: UI_CONVENTIONS.md
+├── src/                     # layout inside src/: docs/conventions/UI_CONVENTIONS.md
 │   ├── app/                 # route table and layout
 │   ├── pages/               # home search, vault, tool page, not found
 │   ├── components/          # UI used by several pages
@@ -59,7 +60,7 @@ tools/<slug>/
 ├── shared/                  # only code that both ui/ and api/ use
 ├── ui/                      # Tool UI Remote
 │   ├── vite.config.ts       # base /remotes/<slug>/, exposes ./Tool, shared singletons
-│   ├── src/                 # layout inside src/: UI_CONVENTIONS.md
+│   ├── src/                 # layout inside src/: docs/conventions/UI_CONVENTIONS.md
 │   │   ├── Tool.tsx         # exposed entry the Host mounts; renders pages/ToolPage.tsx
 │   │   └── i18n/            # en, vi
 │   └── tests/               # *.test.ts (Vitest), *.e2e.ts (Playwright)

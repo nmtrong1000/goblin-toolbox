@@ -1,7 +1,12 @@
-# ADR 0001: Node.js + Express backend
+---
+id: adr-0001
+status: accepted
+date: 2026-11-21
+superseded_by: adr-0003
+superseded_scope: deployment model (one function for every tool)
+---
 
-- **Status:** accepted
-- **Date:** 2026-11-21
+# ADR 0001: Node.js + Express backend
 
 ## Context
 

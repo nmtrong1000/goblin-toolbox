@@ -1,6 +1,6 @@
 # Markdown to PDF: UI design
 
-How the tool's UI remote looks and behaves. Shared visual rules are in [DESIGN.md](../../../docs/design/DESIGN.md); code layout follows [UI_CONVENTIONS.md](../../../docs/design/UI_CONVENTIONS.md). Requirements, the options schema and limits are in the tool's [README](../README.md).
+How the tool's UI remote looks and behaves. Shared visual rules are in [DESIGN.md](../../../docs/design/DESIGN.md); code layout follows [UI_CONVENTIONS.md](../../../docs/conventions/UI_CONVENTIONS.md). Requirements, the options schema and limits are in the tool's [README](../README.md).
 
 Mockup (desktop interactive, mobile settings sheet, states): https://claude.ai/artifact/4Yt6bryqfPQxJ3JURqwNA7
 
@@ -66,7 +66,7 @@ A preset sets the six style fields of `PdfOptions`: `font`, `theme`, `headingSty
 
 ## Motion
 
-Per [DESIGN.md](../../../docs/design/DESIGN.md), Motion, and the Phase 6 reduced-motion decision: preset and toolbar buttons lift on hover and press into their shadow; the drawer slides in from the left (240 ms) and Advanced opens with a short ease; the toast rises in; the preview resizes smoothly. Under `prefers-reduced-motion: reduce` only the drawer's and the bottom sheet's slides become fades.
+Per `DESIGN.md`, Motion, and the Phase 6 reduced-motion decision: preset and toolbar buttons lift on hover and press into their shadow; the drawer slides in from the left (240 ms) and Advanced opens with a short ease; the toast rises in; the preview resizes smoothly. Under `prefers-reduced-motion: reduce` only the drawer's and the bottom sheet's slides become fades.
 
 ## Accessibility
 

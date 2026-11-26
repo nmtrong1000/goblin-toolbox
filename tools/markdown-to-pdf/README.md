@@ -41,14 +41,37 @@ Initial local benchmark on Chrome 157 (Node process RSS; one Chromium instance r
 
 These are local renderer measurements, not Vercel function measurements; the spike observed 320–480 MB system memory on its long fixture. The CI benchmark renders the maximum input, image and diagram counts and writes exact duration and Node RSS values to its log. The 100,000-character, 10-image, and 10-diagram limits remain provisional until the same workload is measured in a Vercel function.
 
-### Runtime configuration
+## Operations
 
-- Production Blob access uses Vercel OIDC through `VERCEL_OIDC_TOKEN` and `BLOB_STORE_ID`; Vercel injects the short-lived OIDC token. Local development can use `BLOB_READ_WRITE_TOKEN`.
-- `CRON_SECRET`: sensitive production bearer token used by the daily expired-file cleanup cron.
-- `LOCAL_CHROME_PATH`: optional local Chrome executable path; Linux CI and Vercel use `@sparticuz/chromium`.
-- `LOCAL_PDF_OUTPUT`: set to `1` by the API service's dev script to download PDFs directly during local development.
+How to deploy, set variables, run cron jobs and read logs is in [docs/DEPLOY_RUNBOOK.md](../../docs/DEPLOY_RUNBOOK.md). This section lists only what this tool adds.
 
-### API examples
+### Environment variables
+
+| Variable | Environments | Notes |
+|---|---|---|
+| `BLOB_STORE_ID` | Production, Preview, Development | Vercel Blob store; Vercel injects the short-lived `VERCEL_OIDC_TOKEN` for access, so no static token is needed on Vercel |
+| `CRON_SECRET` | Production | Sensitive bearer token for the daily cleanup cron |
+| `BLOB_READ_WRITE_TOKEN` | Local only, optional | Only to test real Blob uploads locally |
+| `LOCAL_CHROME_PATH` | Local only, optional | Chrome executable for local rendering; Linux CI and Vercel use `@sparticuz/chromium` |
+| `LOCAL_PDF_OUTPUT` | Local only | Set to `1` by the API service's dev script, so **Create PDF** downloads the file directly instead of uploading it to Blob |
+
+`BLOB_WEBHOOK_PUBLIC_KEY` is added by the Blob integration and is not read by the code.
+
+### Function settings
+
+`markdown-to-pdf-api` in `vercel.json`: `maxDuration` 60 seconds, renderer assets bundled with `includeFiles`.
+
+### Cron jobs
+
+| Path | Schedule | Purpose |
+|---|---|---|
+| `/api/cron/markdown-to-pdf-cleanup` | `0 3 * * *` (03:00 UTC) | Delete expired PDFs from Blob |
+
+### Local development
+
+PDF rendering uses the local Google Chrome; set `LOCAL_CHROME_PATH` if it is not in the default location.
+
+## API examples
 
 Create a PDF:
 
