@@ -56,7 +56,7 @@ Set them in **Vercel → Project → Settings → Environment Variables**, then 
 
 - Function settings live on the tool's API service in `vercel.json` (`functions`): Markdown to PDF uses `maxDuration` 60 seconds and bundles its renderer assets with `includeFiles`.
 - On the Hobby plan memory is fixed at 2048 MB and 1 vCPU and cannot be set per service.
-- Each API service answers `GET /api/tools/<slug>/health` with `200` and `{"status":"ok","service":"<slug>"}`.
+- Each API service has a health route, described in [API_CONVENTIONS.md](./design/API_CONVENTIONS.md).
 
 ## Cron jobs
 
@@ -68,7 +68,7 @@ Cron jobs are declared in `vercel.json` (`crons`) by the tool that needs them an
 
 - List: `vercel crons ls`.
 - Run now: `vercel crons run /api/cron/markdown-to-pdf-cleanup`, or **Run** in **Vercel → Project → Settings → Cron Jobs**.
-- Vercel sends `Authorization: Bearer $CRON_SECRET`; without it the route returns `401`.
+- Vercel sends `Authorization: Bearer $CRON_SECRET`; how the route checks it is in [API_CONVENTIONS.md](./design/API_CONVENTIONS.md).
 
 ## Caching and firewall
 

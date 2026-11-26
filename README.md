@@ -8,7 +8,7 @@ The MVP has one tool: **Markdown to PDF**.
 
 - The home page searches tools; choosing a tool opens the tool's own page.
 - A vault page lists the tools in that vault.
-- i18n in English and Vietnamese **for the UI only**; more locales can be added later. The API has no i18n.
+- i18n in English and Vietnamese **for the UI only**; more locales can be added later.
 - Adding a new tool does not require changing the app shell.
 
 ## Documents
@@ -20,6 +20,7 @@ The MVP has one tool: **Markdown to PDF**.
 | How each phase runs | [docs/WORKFLOW.md](docs/WORKFLOW.md) |
 | Toolbox design | [docs/design/HLD.html](docs/design/HLD.html), [docs/design/PROJECT_STRUCTURE.md](docs/design/PROJECT_STRUCTURE.md) |
 | What a tool must provide | [docs/design/TOOL_CONTRACT.md](docs/design/TOOL_CONTRACT.md) |
+| API conventions | [docs/design/API_CONVENTIONS.md](docs/design/API_CONVENTIONS.md) |
 | How UI code is split | [docs/design/UI_CONVENTIONS.md](docs/design/UI_CONVENTIONS.md) |
 | Deploy, environment, cron, logs, rollback | [docs/DEPLOY_RUNBOOK.md](docs/DEPLOY_RUNBOOK.md) |
 | Shared visual design system | [docs/design/DESIGN.md](docs/design/DESIGN.md) |
@@ -40,8 +41,6 @@ pnpm start
 ```
 
 `pnpm start` runs `vercel dev --local`, which starts every service in `vercel.json` (the Host, each tool's UI remote and API service) behind one address: <http://localhost:5173>. Each API service has its own health endpoint, e.g. <http://localhost:5173/api/tools/markdown-to-pdf/health>.
-
-API contracts are rendered from each tool's `docs/openapi.yaml` to <http://localhost:5173/contracts/markdown-to-pdf.html> (one page per tool, also on every deployment). The Host's dev and build scripts generate them; run `pnpm generate-contracts` to refresh them by hand.
 
 `pnpm build` builds every service. Run `pnpm lint`, `pnpm format:check`, `pnpm typecheck`, `pnpm test` and `pnpm test:ui` before opening a pull request.
 

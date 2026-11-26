@@ -69,5 +69,4 @@ Design documents are in this package's `docs/` directory (Phase 1):
 | `openapi.yaml` | API contract |
 | [TECH_STACK.md](docs/TECH_STACK.md) | libraries the tool adds |
 | `decisions/` | tool decisions |
-
-The UI design (layout, style presets, settings drawer, zoom, feedback) is in [docs/design/tools/markdown-to-pdf/UI.md](../../docs/design/tools/markdown-to-pdf/UI.md).
+| [UI.md](docs/UI.md) | UI design: layout, style presets, settings drawer, zoom, feedback |

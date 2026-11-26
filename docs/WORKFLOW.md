@@ -120,8 +120,9 @@ The agent presents all of the following in one message:
   - Record plans or change history; those belong in the requirement documents, `docs/phases/` and git.
   - Repeat content already in `docs/design/` or other documents.
   - Summarize a test when its name already says enough.
-- System messages are in English: exceptions, config errors, CLI and script output, logs, the `message` in API error responses.
-- User-facing UI text always goes through i18n (`en`, `vi`); never hard-code strings in components. API errors reach the UI by `code`; the UI layer turns the `code` into a sentence in the current locale.
+- System messages are in English: exceptions, config errors, CLI and script output, logs.
+- User-facing UI text always goes through i18n (`en`, `vi`); never hard-code strings in components.
+- API language and error rules are in [docs/design/API_CONVENTIONS.md](./design/API_CONVENTIONS.md).
 
 ## Import rules
 
