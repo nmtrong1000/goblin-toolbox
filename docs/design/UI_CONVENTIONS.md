@@ -67,7 +67,9 @@ Do not split code that is used once and short enough to read in place; a split m
 
 - Start next to the code that uses it.
 - Move it up to `src/components/` or `src/hooks/` of the same package when two pages use it.
-- Move it to `packages/ui-kit` only when the Host and at least two tools use it. Until then each package keeps its own copy.
+- When a tool builds a component, hook or helper that another tool could use, the agent asks the user whether it goes into `packages/ui-kit`: during PLANNING, or as soon as it is spotted in IMPLEMENTATION. The answer is recorded under `## Decisions` in the phase file. Without a yes it stays in the tool.
+- Code in `packages/ui-kit` never imports a tool, never calls `t()` (all text comes in as props) and styles only `common-` classes with design tokens.
+- ui-kit modules are imported by layer and name, e.g. `@goblin/ui-kit/hooks/useDismiss`, `@goblin/ui-kit/components/Drawer`, `@goblin/ui-kit/styles/common.css`.
 
 ## State and data
 

@@ -37,7 +37,7 @@ What every tool must provide so the Host can show it and Vercel can run it. The 
 | Shared singletons | `sharedSingletons` from `@goblin/ui-kit/federation`: `react`, `react-dom`, `react-router-dom`, `i18next`, `react-i18next`, all from the Host; versions come from the workspace catalog |
 | Routing | Renders inside the Host's `/tools/<slug>` page; may use nested routes under it, never routes outside it |
 | i18n | Adds its strings to the shared i18next instance under the namespace `<slug>`, in `en` and `vi`; no hard-coded UI text |
-| Styles | Uses `@goblin/ui-kit` tokens; every class is scoped (CSS modules or a `<slug>-` prefix); no global selectors on `html`, `body` or bare elements |
+| Styles | Uses `@goblin/ui-kit` tokens; every class is scoped (CSS modules or a `<slug>-` prefix; `common-` belongs to `@goblin/ui-kit`, so no tool slug is `common`); no global selectors on `html`, `body` or bare elements |
 | API calls | Only to its own `/api/tools/<slug>/…`, with relative URLs |
 | Errors | Shows API errors by `code`, translated in its own namespace; 429 and network failures use the Host's shared messages |
 

@@ -66,7 +66,9 @@ Used in the REVIEW step of [WORKFLOW.md](./WORKFLOW.md). Tick every best practic
 - Prop drilling across many levels where a context or composition fits.
 - A page or `Tool.tsx` that holds long markup, `fetch` calls or many effects instead of components and hooks.
 - A component that calls `fetch`, reads the router or owns business state.
-- Code moved to `packages/ui-kit` before the Host and two tools use it.
+- Code moved to `packages/ui-kit` without the user's yes recorded in the phase file.
+- A reusable component, hook or helper kept in a tool without asking the user about `packages/ui-kit`.
+- ui-kit code that calls `t()`, imports a tool or uses a class without the `common-` prefix.
 - Disabling the hooks rules instead of fixing the dependency list.
 
 ## Node.js
