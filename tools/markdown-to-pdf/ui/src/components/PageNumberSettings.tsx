@@ -1,7 +1,7 @@
 import { AlignCenter, AlignLeft, AlignRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
-import { SegmentedControl } from '#/components/SegmentedControl.tsx';
+import { SegmentedControl } from '@goblin/ui-kit/components/SegmentedControl';
 
 type PageNumberSettingsProps = {
   options: PdfOptions;

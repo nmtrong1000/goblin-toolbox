@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
-import { DropOverlay } from '#/components/DropOverlay.tsx';
+import { DropOverlay } from '@goblin/ui-kit/components/DropOverlay';
+import { useFileDrop } from '@goblin/ui-kit/hooks/useFileDrop';
 import { EditorHeader } from '#/components/EditorHeader.tsx';
 import { MarkdownEditor } from '#/components/MarkdownEditor.tsx';
-import { useFileDrop } from '#/hooks/useFileDrop.ts';
 
 type EditorPanelProps = {
   hidden: boolean;
@@ -23,7 +23,7 @@ export function EditorPanel({ hidden, value, onChange, onOpenFile }: EditorPanel
     >
       <EditorHeader characters={value.length} />
       <MarkdownEditor label={t('editor')} onChange={onChange} value={value} />
-      {dragging && <DropOverlay />}
+      {dragging && <DropOverlay hint={t('dropHint')} title={t('dropTitle')} />}
     </section>
   );
 }

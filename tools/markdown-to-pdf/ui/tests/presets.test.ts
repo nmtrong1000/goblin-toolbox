@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defaultOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
-import { contrastRatio, isHexColor } from '#/lib/color.ts';
+import { contrastRatio, isHexColor } from '@goblin/ui-kit/lib/color';
 import { applyPreset, matchPreset, presetColors, stylePresets } from '#/lib/presets.ts';
 
 describe('style presets', () => {

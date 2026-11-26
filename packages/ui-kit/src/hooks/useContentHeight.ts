@@ -1,6 +1,6 @@
 /*
- * Mermaid diagrams, images, math and web fonts change the page height after the HTML is set, so the
- * height follows the element with a ResizeObserver instead of measuring once per render.
+ * Images, diagrams and web fonts can change the height after the content is set, so the height
+ * follows the element with a ResizeObserver instead of measuring once per render.
  */
 import { type RefObject, useLayoutEffect, useState } from 'react';
 

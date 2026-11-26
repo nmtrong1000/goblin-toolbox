@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
-import { PdfRequestError, requestPdf } from '#/api/pdf.ts';
-import { saveFile } from '#/lib/saveFile.ts';
+import { ApiError } from '@goblin/ui-kit/api/requestJson';
+import { saveFile } from '@goblin/ui-kit/lib/saveFile';
+import { requestPdf } from '#/api/pdf.ts';
 
 const doneFor = 2000;
 
@@ -25,7 +26,7 @@ export function useCreatePdf() {
       return undefined;
     } catch (error) {
       setStatus('idle');
-      return error instanceof PdfRequestError ? error.code : 'NETWORK_ERROR';
+      return error instanceof ApiError ? error.code : 'NETWORK_ERROR';
     }
   }
 

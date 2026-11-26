@@ -14,7 +14,7 @@ export function EditorHeader({ characters }: EditorHeaderProps) {
 
   return (
     <div className="mdpdf-pane-header">
-      <FileText aria-hidden="true" className="mdpdf-accent-icon" size={16} />
+      <FileText aria-hidden="true" className="common-accent-icon" size={16} />
       <h2 className="mdpdf-pane-title" id="mdpdf-editor-title">
         {t('editorTitle')}
       </h2>

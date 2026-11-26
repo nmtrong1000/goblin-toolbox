@@ -6,16 +6,16 @@ type ToggleSwitchProps = {
 
 export function ToggleSwitch({ label, checked, onChange }: ToggleSwitchProps) {
   return (
-    <label className="mdpdf-switch">
+    <label className="common-switch">
       <input
         checked={checked}
-        className="mdpdf-choice-input"
+        className="common-choice-input"
         onChange={(event) => onChange(event.target.checked)}
         role="switch"
         type="checkbox"
       />
-      <span aria-hidden="true" className="mdpdf-switch-track">
-        <span className="mdpdf-switch-knob" />
+      <span aria-hidden="true" className="common-switch-track">
+        <span className="common-switch-knob" />
       </span>
       {label}
     </label>

@@ -1,16 +1,16 @@
 import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { defaultOptions, type PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
+import { Toast } from '@goblin/ui-kit/components/Toast';
+import { useToast } from '@goblin/ui-kit/hooks/useToast';
 import { EditorPanel } from '#/components/EditorPanel.tsx';
 import { type MobileView, MobileViewSwitch } from '#/components/MobileViewSwitch.tsx';
 import { PreviewPane } from '#/components/PreviewPane.tsx';
 import { SettingsDrawer } from '#/components/SettingsDrawer.tsx';
-import { Toast } from '#/components/Toast.tsx';
 import { Toolbar } from '#/components/Toolbar.tsx';
 import { useCreatePdf } from '#/hooks/useCreatePdf.ts';
 import { useMarkdownDocument } from '#/hooks/useMarkdownDocument.ts';
 import { usePreviewHtml } from '#/hooks/usePreviewHtml.ts';
-import { useToast } from '#/hooks/useToast.ts';
 import { matchPreset } from '#/lib/presets.ts';
 
 export function ToolPage() {
@@ -76,7 +76,13 @@ export function ToolPage() {
         <PreviewPane hidden={mobileView === 'editor'} html={html} options={options} />
       </div>
       {toast && (
-        <Toast key={toast.id} message={toast.message} onDismiss={dismiss} title={toast.title} />
+        <Toast
+          dismissLabel={t('dismiss')}
+          key={toast.id}
+          message={toast.message}
+          onDismiss={dismiss}
+          title={toast.title}
+        />
       )}
     </section>
   );

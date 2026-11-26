@@ -34,7 +34,7 @@ export function Toolbar({
         {t('upload')}
         <input
           accept=".md,text/markdown"
-          className="mdpdf-sr-only"
+          className="common-sr-only"
           onChange={(event) => {
             const file = event.target.files?.[0];
             event.target.value = '';

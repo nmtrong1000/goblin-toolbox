@@ -1,10 +1,10 @@
 import { RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
+import { SegmentedControl } from '@goblin/ui-kit/components/SegmentedControl';
+import { ToggleSwitch } from '@goblin/ui-kit/components/ToggleSwitch';
 import { PageNumberSettings } from '#/components/PageNumberSettings.tsx';
 import { PageSizePicker } from '#/components/PageSizePicker.tsx';
-import { SegmentedControl } from '#/components/SegmentedControl.tsx';
-import { ToggleSwitch } from '#/components/ToggleSwitch.tsx';
 
 const margins: PdfOptions['margin'][] = ['narrow', 'normal', 'wide'];
 

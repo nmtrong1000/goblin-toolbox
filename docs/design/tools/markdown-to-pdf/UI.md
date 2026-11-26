@@ -79,10 +79,12 @@ Per [DESIGN.md](../../DESIGN.md), Motion, and the Phase 6 reduced-motion decisio
 | Layer | Files |
 |---|---|
 | Page | `pages/ToolPage.tsx` (owns options, mobile view, toast) |
-| Components | `Toolbar`, `CreatePdfButton`, `SettingsDrawer` (a drawer on desktop, the same element styled as a bottom sheet on mobile), `PresetPicker`, `PresetCard`, `PageSettings`, `PageSizePicker`, `SegmentedControl`, `ToggleSwitch`, `AdvancedSettings`, `ColorField`, `ColorPopover`, `EditorPanel`, `EditorHeader`, `DropOverlay`, `PreviewPane`, `ZoomControl`, `Toast`, `MobileViewSwitch` |
-| Hooks | `useFileDrop`, `useToast`, `useDismiss` (Escape and outside click), `useCreatePdf` (adds the done state), `usePreviewScale` (the Fit scale), existing hooks |
-| Lib | `presets.ts` (the table above, `matchPreset`, `applyPreset`, `presetColors`), `color.ts` (hex check, contrast), `zoom.ts` (zoom steps), `editorTheme.ts` (CodeMirror theme and highlight style) |
-| Styles | `toolbar.css`, `settings.css`, `advanced.css`, `editor.css`, `preview.css`, `feedback.css` (mobile and reduced motion), imported by `Tool.tsx`; all classes and keyframes prefixed `mdpdf-` |
+| Components | `Toolbar`, `CreatePdfButton`, `SettingsDrawer` (the settings panels inside the ui-kit `Drawer`), `PresetPicker`, `PresetCard`, `PageSettings`, `PageNumberSettings`, `PageSizePicker`, `MarginInputs`, `AdvancedSettings`, `EditorPanel`, `EditorHeader`, `MarkdownEditor`, `PreviewPane`, `ZoomControl`, `MobileViewSwitch` |
+| Hooks | `useCreatePdf` (adds the done state), `usePreviewFit` (the Fit scale), `usePreviewHtml`, `useMarkdownDocument` |
+| API client | `api/pdf.ts`, built on `postJson` from `@goblin/ui-kit/api/requestJson` |
+| Lib | `presets.ts` (the table above, `matchPreset`, `applyPreset`, `presetColors`), `pageLayout.ts`, `zoom.ts` (zoom steps), `formatMarkdown.ts`, `sampleDocument.ts` (the starting document from `SAMPLE_EN.md` or `SAMPLE_VI.md`, by the current language), `editorTheme.ts` (CodeMirror theme and highlight style) |
+| From `@goblin/ui-kit` | `Drawer`, `SegmentedControl`, `ToggleSwitch`, `ColorField` with `ColorPopover`, `DropOverlay`, `Toast`; `useDismiss` (Escape and outside click), `useToast`, `useFileDrop`, `useContentHeight`; `saveFile`, `color.ts` (hex check, contrast). Text reaches them as props from this tool's namespace |
+| Styles | `@goblin/ui-kit/styles/common.css` first, then `toolbar.css`, `settings.css`, `advanced.css`, `editor.css`, `preview.css`, `feedback.css` (mobile), imported by `Tool.tsx`; the tool's classes and keyframes are prefixed `mdpdf-`, ui-kit's `common-` |
 
 `lucide-react` is a dependency of the tool's UI package; it is not shared through Module Federation.
 

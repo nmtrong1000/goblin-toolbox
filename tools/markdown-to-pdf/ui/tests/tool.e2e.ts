@@ -145,6 +145,17 @@ test('long lines wrap inside the editor instead of being cut off', async ({ page
   expect(layout.lineHeight).toBeGreaterThan(100);
 });
 
+test('the default sample shows every kind of content', async ({ page }) => {
+  const preview = page.locator('.mdpdf-preview');
+  await expect(preview.locator('.mdpdf-frontmatter th').first()).toHaveText('title');
+  await expect(preview.locator('h1')).toHaveText('Markdown to PDF');
+  await expect(preview.locator('table:not(.mdpdf-frontmatter) tbody tr')).toHaveCount(4);
+  await expect(preview.locator('input[type="checkbox"]')).toHaveCount(4);
+  await expect(preview.locator('pre.hljs').first()).toBeVisible();
+  await expect(preview.locator('.katex-display')).toHaveCount(1);
+  await expect(preview.locator('.mdpdf-mermaid svg')).toHaveCount(3);
+});
+
 test('frontmatter, diagrams and long documents stay readable inside the paper', async ({
   page,
 }) => {
@@ -237,6 +248,6 @@ test('errors show a translated toast and mobile uses a settings sheet', async ({
   await page.getByRole('button', { name: /^Thiết lập/ }).click();
   const sheet = page.getByRole('complementary', { name: 'Thiết lập tài liệu' });
   await expect(sheet).toHaveCSS('position', 'fixed');
-  await page.locator('.mdpdf-backdrop').click({ position: { x: 20, y: 20 } });
+  await page.locator('.common-backdrop').click({ position: { x: 20, y: 20 } });
   await expect(sheet).toBeHidden();
 });

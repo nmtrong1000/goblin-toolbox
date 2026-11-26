@@ -9,7 +9,7 @@ How the repo maps onto the architecture in [HLD.html](./HLD.html): one Host, sha
 ├── vercel.json              # Vercel Services: one entry per service, public route table, crons
 ├── host/                    # Host service: static Vite SPA, the only app users open
 ├── packages/
-│   ├── ui-kit/              # design tokens and the Module Federation settings shared by Host and remotes
+│   ├── ui-kit/              # design tokens, Module Federation settings, shared UI components, hooks and helpers
 │   └── server-kit/          # Express app factory, middleware, error format for tool APIs
 ├── scripts/
 │   └── newTool.mjs          # pnpm new-tool <slug>: creates a tool and registers its services

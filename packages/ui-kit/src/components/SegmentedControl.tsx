@@ -23,26 +23,26 @@ export function SegmentedControl<T extends string>({
   onChange,
 }: SegmentedControlProps<T>) {
   return (
-    <fieldset className="mdpdf-field">
-      <legend className="mdpdf-field-label">{legend}</legend>
-      <div className="mdpdf-segmented">
+    <fieldset className="common-field">
+      <legend className="common-field-label">{legend}</legend>
+      <div className="common-segmented">
         {choices.map((choice) => (
           <label
-            className="mdpdf-segment"
+            className="common-segment"
             key={choice.value}
             title={choice.iconOnly ? choice.label : undefined}
           >
             <input
               checked={choice.value === value}
-              className="mdpdf-choice-input"
+              className="common-choice-input"
               name={name}
               onChange={() => onChange(choice.value)}
               type="radio"
               value={choice.value}
             />
-            <span className="mdpdf-segment-face">
+            <span className="common-segment-face">
               {choice.icon}
-              <span className={choice.iconOnly ? 'mdpdf-sr-only' : undefined}>{choice.label}</span>
+              <span className={choice.iconOnly ? 'common-sr-only' : undefined}>{choice.label}</span>
             </span>
           </label>
         ))}
