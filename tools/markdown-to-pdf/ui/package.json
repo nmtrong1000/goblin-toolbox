@@ -16,6 +16,7 @@
     "@codemirror/state": "^6.7.6",
     "@codemirror/view": "^6.43.15",
     "@goblin/tool-markdown-to-pdf-shared": "workspace:*",
+    "@goblin/ui-kit": "workspace:*",
     "@lezer/highlight": "^1.2.5",
     "codemirror": "^6.0.2",
     "i18next": "catalog:",
@@ -27,7 +28,6 @@
     "react-router-dom": "catalog:"
   },
   "devDependencies": {
-    "@goblin/ui-kit": "workspace:*",
     "@module-federation/vite": "catalog:",
     "@types/react": "catalog:",
     "@types/react-dom": "catalog:",

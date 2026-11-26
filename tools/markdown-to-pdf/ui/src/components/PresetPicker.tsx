@@ -15,7 +15,7 @@ export function PresetPicker({ options, styleName, onChange }: PresetPickerProps
 
   return (
     <section className="mdpdf-settings-section">
-      <fieldset className="mdpdf-field">
+      <fieldset className="common-field">
         <legend className="mdpdf-section-heading">
           <span className="mdpdf-section-title">{t('styleSection')}</span>
           <span className="mdpdf-chip">{styleName}</span>
@@ -25,7 +25,7 @@ export function PresetPicker({ options, styleName, onChange }: PresetPickerProps
             <label className="mdpdf-preset" key={preset.id}>
               <input
                 checked={active?.id === preset.id}
-                className="mdpdf-choice-input"
+                className="common-choice-input"
                 name="mdpdf-preset"
                 onChange={() => onChange(applyPreset(options, preset))}
                 type="radio"

@@ -2,9 +2,9 @@ import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import type { PdfOptions } from '@goblin/tool-markdown-to-pdf-shared/options';
-import { ColorField } from '#/components/ColorField.tsx';
+import { ColorField } from '@goblin/ui-kit/components/ColorField';
+import { SegmentedControl } from '@goblin/ui-kit/components/SegmentedControl';
 import { MarginInputs } from '#/components/MarginInputs.tsx';
-import { SegmentedControl } from '#/components/SegmentedControl.tsx';
 import { presetColors } from '#/lib/presets.ts';
 
 const colorRoles = [
@@ -72,12 +72,17 @@ export function AdvancedSettings({ options, onChange }: AdvancedSettingsProps) {
             value={options.theme}
           />
           <MarginInputs onChange={onChange} options={options} />
-          <fieldset className="mdpdf-field">
-            <legend className="mdpdf-field-label">{t('colors')}</legend>
+          <fieldset className="common-field">
+            <legend className="common-field-label">{t('colors')}</legend>
             {colorRoles.map(({ role, label }) => (
               <ColorField
                 key={role}
                 label={t(label)}
+                labels={{
+                  choose: t('chooseColor', { role: t(label).toLowerCase() }),
+                  value: t('colorValue', { role: t(label) }),
+                  custom: t('customColor'),
+                }}
                 onChange={(value) => update('colors', { ...options.colors, [role]: value })}
                 swatches={presetColors(role)}
                 value={options.colors[role]}

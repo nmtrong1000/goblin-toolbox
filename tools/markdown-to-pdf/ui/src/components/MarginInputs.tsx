@@ -33,8 +33,8 @@ export function MarginInputs({ options, onChange }: MarginInputsProps) {
   }
 
   return (
-    <fieldset className="mdpdf-field">
-      <legend className="mdpdf-field-label">{t('margins')}</legend>
+    <fieldset className="common-field">
+      <legend className="common-field-label">{t('margins')}</legend>
       <div className="mdpdf-margin-grid">
         {sides.map(({ side, label }) => (
           <label className="mdpdf-margin-input" key={side}>

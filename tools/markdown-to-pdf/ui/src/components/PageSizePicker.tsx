@@ -14,8 +14,8 @@ export function PageSizePicker({ options, onChange }: PageSizePickerProps) {
   const { t } = useTranslation('markdown-to-pdf');
 
   return (
-    <fieldset className="mdpdf-field">
-      <legend className="mdpdf-field-label">{t('pageSize')}</legend>
+    <fieldset className="common-field">
+      <legend className="common-field-label">{t('pageSize')}</legend>
       <div className="mdpdf-size-grid">
         {pageSizes.map((size) => {
           const layout = pageLayout({ ...options, pageSize: size });
@@ -23,7 +23,7 @@ export function PageSizePicker({ options, onChange }: PageSizePickerProps) {
             <label className="mdpdf-size" key={size}>
               <input
                 checked={options.pageSize === size}
-                className="mdpdf-choice-input"
+                className="common-choice-input"
                 name="mdpdf-page-size"
                 onChange={() => onChange(size)}
                 type="radio"

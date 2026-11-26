@@ -117,39 +117,6 @@
   animation: mdpdf-spin 900ms linear infinite;
 }
 
-.mdpdf-icon-button {
-  width: 32px;
-  height: 32px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  border: 0;
-  border-radius: var(--radius-md);
-  background: var(--color-paper-deep);
-  color: var(--color-ink-mid);
-  cursor: pointer;
-  transition: background var(--motion-state-change);
-}
-
-.mdpdf-icon-button:hover {
-  background: var(--color-accent-pale);
-  color: var(--color-accent-dark);
-}
-
-.mdpdf-accent-icon {
-  flex-shrink: 0;
-  color: var(--color-accent);
-}
-
-.mdpdf-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip-path: inset(50%);
-  white-space: nowrap;
-}
-
 @keyframes mdpdf-spin {
   to {
     transform: rotate(360deg);
@@ -170,25 +137,5 @@
 @keyframes mdpdf-fade-in {
   from {
     opacity: 0;
-  }
-}
-
-@keyframes mdpdf-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-  }
-}
-
-@keyframes mdpdf-drawer-in {
-  from {
-    opacity: 0;
-    transform: translateX(-24px);
-  }
-}
-
-@keyframes mdpdf-sheet-in {
-  from {
-    transform: translateY(100%);
   }
 }

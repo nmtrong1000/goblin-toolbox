@@ -14,9 +14,7 @@ export function usePreviewHtml(markdown: string) {
     const controller = new AbortController();
     const timer = window.setTimeout(() => {
       requestPreview(markdown, controller.signal)
-        .then((result) => {
-          if (result !== undefined) setPrepared({ source: markdown, markdown: result });
-        })
+        .then((result) => setPrepared({ source: markdown, markdown: result }))
         .catch(() => undefined);
     }, 300);
     return () => {

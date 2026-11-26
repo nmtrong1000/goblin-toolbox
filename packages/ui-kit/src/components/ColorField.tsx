@@ -1,18 +1,19 @@
 import { useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { ColorPopover } from '#/components/ColorPopover.tsx';
 import { type DismissReason, useDismiss } from '#/hooks/useDismiss.ts';
 import { isHexColor } from '#/lib/color.ts';
 
+export type ColorFieldLabels = { choose: string; value: string; custom: string };
+
 type ColorFieldProps = {
   label: string;
+  labels: ColorFieldLabels;
   value: string;
   swatches: string[];
   onChange: (value: string) => void;
 };
 
-export function ColorField({ label, value, swatches, onChange }: ColorFieldProps) {
-  const { t } = useTranslation('markdown-to-pdf');
+export function ColorField({ label, labels, value, swatches, onChange }: ColorFieldProps) {
   const [open, setOpen] = useState(false);
   const [draft, setDraft] = useState<string>();
   const area = useRef<HTMLDivElement>(null);
@@ -26,20 +27,20 @@ export function ColorField({ label, value, swatches, onChange }: ColorFieldProps
   useDismiss(area, open, close, { outsideClick: true });
 
   return (
-    <div className="mdpdf-color-field" ref={area}>
-      <span className="mdpdf-color-label">{label}</span>
+    <div className="common-color-field" ref={area}>
+      <span className="common-color-label">{label}</span>
       <button
         aria-expanded={open}
-        aria-label={t('chooseColor', { role: label.toLowerCase() })}
-        className="mdpdf-color-swatch"
+        aria-label={labels.choose}
+        className="common-color-swatch"
         onClick={() => setOpen(!open)}
         ref={swatchButton}
         style={{ background: value }}
         type="button"
       />
       <input
-        aria-label={t('colorValue', { role: label })}
-        className="mdpdf-color-hex"
+        aria-label={labels.value}
+        className="common-color-hex"
         maxLength={7}
         onBlur={() => setDraft(undefined)}
         onChange={(event) => {
@@ -51,7 +52,15 @@ export function ColorField({ label, value, swatches, onChange }: ColorFieldProps
         spellCheck={false}
         value={draft ?? value.toUpperCase()}
       />
-      {open && <ColorPopover label={label} onChange={onChange} swatches={swatches} value={value} />}
+      {open && (
+        <ColorPopover
+          customLabel={labels.custom}
+          label={label}
+          onChange={onChange}
+          swatches={swatches}
+          value={value}
+        />
+      )}
     </div>
   );
 }

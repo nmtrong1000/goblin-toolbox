@@ -2,11 +2,28 @@
   "name": "@goblin/ui-kit",
   "private": true,
   "type": "module",
+  "imports": {
+    "#/*": "./src/*"
+  },
   "exports": {
     "./tokens.css": "./src/tokens.css",
-    "./federation": "./src/federation.ts"
+    "./federation": "./src/federation.ts",
+    "./components/*": "./src/components/*.tsx",
+    "./hooks/*": "./src/hooks/*.ts",
+    "./lib/*": "./src/lib/*.ts",
+    "./api/*": "./src/api/*.ts",
+    "./styles/*": "./src/styles/*"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
+  },
+  "peerDependencies": {
+    "lucide-react": "^1.78.0",
+    "react": "catalog:"
+  },
+  "devDependencies": {
+    "@types/react": "catalog:",
+    "lucide-react": "^1.78.0",
+    "react": "catalog:"
   }
 }

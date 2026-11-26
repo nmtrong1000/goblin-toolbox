@@ -1,4 +1,5 @@
 import i18n from 'i18next';
+import '@goblin/ui-kit/styles/common.css';
 import en from '#/i18n/en.ts';
 import vi from '#/i18n/vi.ts';
 import { ToolPage } from '#/pages/ToolPage.tsx';
