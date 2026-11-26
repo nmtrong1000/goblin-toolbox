@@ -1,6 +1,8 @@
 /*
  * `vercel dev` sets VERCEL=1 too, so VERCEL_ENV tells a real Vercel function (Linux, @sparticuz/chromium)
  * apart from local development, which uses the Chrome installed on the machine.
+ * Chrome is launched over a pipe so it exits with the Node process even when that process is killed
+ * hard; a WebSocket launch leaves a detached Chrome running after the dev server dies.
  */
 import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -84,6 +86,7 @@ async function createRenderPage(markdown: string, options: PdfOptions) {
     browser = await puppeteer.launch({
       ...launchOptions,
       headless: true,
+      pipe: true,
     });
   }
   const page = await browser.newPage();
